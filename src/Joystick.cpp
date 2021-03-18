@@ -412,7 +412,11 @@ Joystick_::Joystick_(
 	// Create a copy of the HID Report Descriptor template that is just the right size
 	uint8_t *customHidReportDescriptor = new uint8_t[hidReportDescriptorSize];
 	memcpy(customHidReportDescriptor, tempHidReportDescriptor, hidReportDescriptorSize);
+
 	// Register HID Report Description
+    uint8_t *pidReportDescriptor;
+    uint16_t pidReportDescriptorSize;
+    pidReportDescriptorSize = GeneratePidReport(pidReportDescriptor, true, true, false);
 	DynamicHIDSubDescriptor* node = new DynamicHIDSubDescriptor(customHidReportDescriptor, hidReportDescriptorSize,pidReportDescriptor, pidReportDescriptorSize, false);
 	
 	DynamicHID().AppendDescriptor(node);

@@ -2,9 +2,14 @@
 #ifndef _FFB_H
 #define _FFB_H
 
-static const uint8_t pidReportDescriptor[] PROGMEM= {
-  // PID State Report
-  0x05, 0x0F,          // USAGE_PAGE (Physical Interface)
+#include <stdint.h>
+#include <Arduino.h>
+
+int AppendArray(uint8_t *target, uint8_t *source, uint16_t offset, uint16_t len);
+
+int GeneratePidReport(uint8_t *pidReport, bool force_x, bool force_y, bool force_z);
+
+static const uint8_t stateReport[] PROGMEM= {
   0x09, 0x92,          // USAGE (PID State Report)
   0xA1, 0x02,          // COLLECTION (Logical)
 	0x85, 0x02,          // REPORT_ID (02)
@@ -38,11 +43,10 @@ static const uint8_t pidReportDescriptor[] PROGMEM= {
 	0x75, 0x07,           //  Report Size (7)
 	0x95, 0x01,           //  Report Count (1)
 	0x81, 0x02,           //  Input (variable,absolute)
-  0xC0,                 //End Collection Datalink (Logical) (OK)
+  0xC0                  //End Collection Datalink (Logical) (OK)
+};
 
-  //================================OutputReport======================================//
-
-  // SetEffectReport
+static const uint8_t setEffectReport[] PROGMEM = {
   0x09, 0x21,           //Usage (Set Effect Report)
   0xA1, 0x02,           //Collection Datalink (Logical)
 	0x85, 0x01,           //Report ID 1
@@ -157,9 +161,10 @@ static const uint8_t pidReportDescriptor[] PROGMEM= {
 	 0x91, 0x02,           //          Output (Data,Var,Abs)
 	0xC0,                 //        End Collection (Logical)
 
-  0xC0,                 //End Collection Datalink (Logical) (OK)
+  0xC0                  //End Collection Datalink (Logical) (OK)
+};
 
-  // SetEnvelopeReport
+static const uint8_t setEnvelopeReport[] PROGMEM = {
   0x09, 0x5A,           //Usage (Set Envelope Report)
   0xA1, 0x02,           //Collection Datalink (Logical)
 	0x85, 0x02,           //Report ID 2
@@ -191,9 +196,10 @@ static const uint8_t pidReportDescriptor[] PROGMEM= {
 	0x45, 0x00,           //   Physical Maximum (0)
 	0x66, 0x00, 0x00,     //   Unit (0)
 	0x55, 0x00,           //   Unit Exponent (0)
-  0xC0,                 //End Collection Datalink (Logical) (OK)
+  0xC0                  //End Collection Datalink (Logical) (OK)
+};
 
-  // SetConditionReport
+static const uint8_t setConditionReport[] PROGMEM= {
   0x09, 0x5F,           //Usage (Set Condition Report)
   0xA1, 0x02,           //Collection Datalink (Logical)
 	0x85, 0x03,           //Report ID 3
@@ -248,9 +254,10 @@ static const uint8_t pidReportDescriptor[] PROGMEM= {
 	0x46, 0x10, 0x27,       //   Physical Maximum (10000)
 	0x95, 0x01,           //   Report Count (1)
 	0x91, 0x02,           //   Output (Data,Var,Abs)
-  0xC0,                 //End Collection Datalink (Logical) (OK)
+  0xC0                  //End Collection Datalink (Logical) (OK)
+};
 
-  // SetPeriodicReport
+static const uint8_t setPeriodicReport[] PROGMEM= {
   0x09, 0x6E,           //Usage (Set Periodic Report)
   0xA1, 0x02,           //Collection Datalink (Logical)
 	0x85, 0x04,           //Report ID 4
@@ -300,9 +307,10 @@ static const uint8_t pidReportDescriptor[] PROGMEM= {
 	0x91, 0x02,           //   Output (Data,Var,Abs)
 	0x66, 0x00, 0x00,     //  Unit (0)
 	0x55, 0x00,           //  Unit Exponent (0)
-  0xC0,                 //End Collection Datalink (Logical) (OK)
+  0xC0                  //End Collection Datalink (Logical) (OK)
+};
 
-  // SetConstantForceReport
+static const uint8_t setConstantForceReport[] PROGMEM= {
   0x09, 0x73,           //Usage (Set Constant Force Report)
   0xA1, 0x02,           //Collection Datalink (Logical)
 	0x85, 0x05,           // Report ID 5
@@ -322,9 +330,10 @@ static const uint8_t pidReportDescriptor[] PROGMEM= {
 	0x75, 0x10,           //   Report Size (16)
 	0x95, 0x01,           //   Report Count (1)
 	0x91, 0x02,           //   Output (Data,Var,Abs)
-  0xC0,                 //End Collection Datalink (Logical) (OK)
+  0xC0                  //End Collection Datalink (Logical) (OK)
+};
 
-  // SetRampForceReport
+static const uint8_t setRampForceReport[] PROGMEM= {
   0x09, 0x74,           //Usage (Set Ramp Force Report)
   0xA1, 0x02,           //Collection Datalink (Logical)
 	0x85, 0x06,           // Report ID 6
@@ -345,9 +354,10 @@ static const uint8_t pidReportDescriptor[] PROGMEM= {
 	0x75, 0x10,           //   Report Size (16)
 	0x95, 0x02,           //   Report Count (2)
 	0x91, 0x02,           //   Output (Data,Var,Abs)
-  0xC0,                 //End Collection Datalink (Logical) (OK)
+  0xC0                  //End Collection Datalink (Logical) (OK)
+};
 
-  // CustomForceDataReport
+static const uint8_t customForceDataReport[] PROGMEM= {
   0x09, 0x68,           //Usage (Custom Force Data Report)
   0xA1, 0x02,           //Collection Datalink (Logical)
 	0x85, 0x07,           // Report ID 7
@@ -375,9 +385,10 @@ static const uint8_t pidReportDescriptor[] PROGMEM= {
 	0x75, 0x08,           //   Report Size (8)
 	0x95, 0x0C,           //   Report Count (12)
 	0x92, 0x02, 0x01,     //   Output (Variable, Buffered)
-  0xC0,                 //End Collection Datalink (Logical) (OK)
+  0xC0                  //End Collection Datalink (Logical) (OK)
+};
 
-  // DownloadForceSample
+static const uint8_t downloadForceSample[] PROGMEM= {
   0x09, 0x66,           //Usage (Download Force Sample)
   0xA1, 0x02,           //Collection Datalink (Logical)
 	0x85, 0x08,           //Report ID 8
@@ -392,9 +403,10 @@ static const uint8_t pidReportDescriptor[] PROGMEM= {
 	0x75, 0x08,           //     Report Size (8)
 	0x95, 0x03,           //     Report Count (3)
 	0x91, 0x02,           //     Output (Data,Var,Abs)
-  0xC0,                 //End Collection Datalink (Logical) (OK)
+  0xC0                  //End Collection Datalink (Logical) (OK)
+};
 
-  // EffectOperationReport
+static const uint8_t effectOperationReport[] PROGMEM= {
   0x05, 0x0F,           //Usage Page (Physical Interface)
   0x09, 0x77,           //Usage (Effect Operation Report)
   0xA1, 0x02,           //Collection Datalink (Logical)
@@ -424,9 +436,10 @@ static const uint8_t pidReportDescriptor[] PROGMEM= {
 	0x35, 0x00,           //   Physical Minimum (0)
 	0x46, 0xFF, 0x00,     //   Physical Maximum (255)
 	0x91, 0x02,           //   Output (Data,Var,Abs)
-  0xC0,                 //End Collection Datalink (Logical) (OK)
+  0xC0                  //End Collection Datalink (Logical) (OK)
+};
 
-  // PIDBlockFreeReport
+static const uint8_t pidBlockFreeReport[] PROGMEM= {
   0x09, 0x90,           //Usage (PID Block Free Report)
   0xA1, 0x02,           //Collection Datalink (Logical)
 	0x85, 0x0B,           // Report ID 11
@@ -438,8 +451,10 @@ static const uint8_t pidReportDescriptor[] PROGMEM= {
 	0x75, 0x08,           //   Report Size (8)
 	0x95, 0x01,           //   Report Count (1)
 	0x91, 0x02,           //   Output (Data,Var,Abs)
-  0xC0,                 //End Collection Datalink (Logical) (OK)
-  //PIDDeviceControl
+  0xC0                  //End Collection Datalink (Logical) (OK)
+};
+
+static const uint8_t pidDeviceControl[] PROGMEM= {
   0x09, 0x96,           //Usage (PID Device Control)
   0xA1, 0x02,           //Collection Datalink (Logical)
 	0x85, 0x0C,           // Report ID 12
@@ -454,9 +469,10 @@ static const uint8_t pidReportDescriptor[] PROGMEM= {
 	0x75, 0x08,           //   Report Size (8)
 	0x95, 0x01,           //   Report Count (1)
 	0x91, 0x00,           //   Output (Data)
-  0xC0,                 //End Collection Datalink (Logical) (OK)
+  0xC0                  //End Collection Datalink (Logical) (OK)
+};
 
-  // DeviceGainReport
+static const uint8_t deviceGainReport[] PROGMEM= {
   0x09, 0x7D,           //Usage (Device Gain Report)
   0xA1, 0x02,           //Collection Datalink (Logical)
 	0x85, 0x0D,           //Report ID 13
@@ -468,9 +484,10 @@ static const uint8_t pidReportDescriptor[] PROGMEM= {
 	0x75, 0x08,           //   Report Size (8)
 	0x95, 0x01,           //   Report Count (1)
 	0x91, 0x02,           //   Output (Data,Var,Abs)
-  0xC0,                 //End Collection Datalink (Logical) (OK)
+  0xC0                  //End Collection Datalink (Logical) (OK)
+};
 
-  //SetCustomForceReport
+static const uint8_t setCustomForceReport[] PROGMEM= {
   0x09, 0x6B,           //Usage (Set Custom Force Report)
   0xA1, 0x02,           //Collection Datalink (Logical)
 	0x85, 0x0E,           // Report ID 14
@@ -502,11 +519,10 @@ static const uint8_t pidReportDescriptor[] PROGMEM= {
 	0x91, 0x02,           //   Output (Data,Var,Abs)
 	0x55, 0x00,           //   Unit (Exponent 0)
 	0x66, 0x00, 0x00,     //   Unit 0
-  0xC0,                 //End Collection Datalink (Logical) (OK)
+  0xC0                  //End Collection Datalink (Logical) (OK)
+};
 
-  //=========================================FeatureReport======================================//
-
-  //CreateNewEffectReport
+static const uint8_t createNewEffectReport[] PROGMEM= {
   0x09, 0xAB, // USAGE (Create New Effect Report)
   0xA1, 0x02, // COLLECTION (Logical)
 	0x85, 0x05, // REPORT_ID (05)
@@ -543,9 +559,10 @@ static const uint8_t pidReportDescriptor[] PROGMEM= {
 	0xB1, 0x02, // FEATURE (Data,Var,Abs)
 	0x75, 0x06, // REPORT_SIZE (06)
 	0xB1, 0x01, // FEATURE (Constant,Ary,Abs)
-  0xC0, // END COLLECTION ()
+  0xC0  // END COLLECTION ()
+};
 
-  // PIDBlockLoadReport
+static const uint8_t pidBlockLoadReport[] PROGMEM= {
   0x05, 0x0F, // USAGE_PAGE (Physical Interface)
   0x09, 0x89, // USAGE (PID Block Load Report)
   0xA1, 0x02, // COLLECTION (Logical)
@@ -579,9 +596,10 @@ static const uint8_t pidReportDescriptor[] PROGMEM= {
 	0x75, 0x10, // REPORT_SIZE (10)
 	0x95, 0x01, // REPORT_COUNT (01)
 	0xB1, 0x00, // FEATURE (Data)
-  0xC0, // END COLLECTION ()
+  0xC0  // END COLLECTION ()
+};
 
-  // PIDPoolReport
+static const uint8_t pidPoolReport[] PROGMEM= {
   0x09, 0x7F, // USAGE (PID Pool Report)
   0xA1, 0x02, // COLLECTION (Logical)
 	0x85, 0x07, // REPORT_ID (07)
@@ -611,11 +629,9 @@ static const uint8_t pidReportDescriptor[] PROGMEM= {
 	0x75, 0x06, // REPORT_SIZE (06)
 	0x95, 0x01, // REPORT_COUNT (01)
 	0xB1, 0x03, // FEATURE ( Cnst,Var,Abs)
-  0xC0, // END COLLECTION ()
-0xC0 // END COLLECTION ()
+  0xC0  // END COLLECTION ()
 };
 
-int pidReportDescriptorSize = sizeof(pidReportDescriptor) / sizeof(pidReportDescriptor[0]);
 
 #endif // !
 
