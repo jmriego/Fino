@@ -176,8 +176,10 @@ void PIDReportHandler::SetEffect(USB_FFBReport_SetEffect_Output_Data_t* data)
 	volatile TEffectState* effect = &g_EffectStates[data->effectBlockIndex];
 
 	effect->duration = data->duration;
-	effect->directionX = data->directionX;
-	effect->directionY = data->directionY;
+    for (int i=0; i<FFB_AXIS_COUNT; ++i)
+    {
+        effect->direction[i] = data->direction[i];
+    }
 	effect->effectType = data->effectType;
 	effect->gain = data->gain;
 	effect->enableAxis = data->enableAxis;
@@ -222,6 +224,11 @@ void PIDReportHandler::SetEnvelope(USB_FFBReport_SetEnvelope_Output_Data_t* data
 void PIDReportHandler::SetCondition(USB_FFBReport_SetCondition_Output_Data_t* data, volatile TEffectState* effect)
 {
         uint8_t axis = data->parameterBlockOffset; 
+        if (axis >= effect->conditionReportsCount)
+        {
+            effect->conditionReportsCount = axis + 1;
+        }
+
         effect->conditions[axis].cpOffset = data->cpOffset;
         effect->conditions[axis].positiveCoefficient = data->positiveCoefficient;
         effect->conditions[axis].negativeCoefficient = data->negativeCoefficient;
@@ -275,6 +282,13 @@ void PIDReportHandler::UppackUsbData(uint8_t* data, uint16_t len)
 {
 	//Serial.print("len:");
 	//Serial.println(len);
+    //for (uint16_t i=0; i<len; ++i) {
+    //  if (data[i] < 0xA0) {
+    //    Serial.print(" ");
+    //  }
+    //  Serial.print(data[i], HEX);
+    //}
+    //Serial.println("");
 	uint8_t effectId = data[1]; // effectBlockIndex is always the second byte.
 	switch (data[0])    // reportID
 	{
