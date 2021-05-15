@@ -2,6 +2,7 @@
 
 ## Fino will make a Force Feedback Joystick out of your Arduino
 ### It requires an ATMega32UX chip device such as an Arduino Micro
+### Experimental support for the DUE
 
 ## Usage
 
