@@ -41,7 +41,8 @@ Joystick_ Joystick(
     19, 2, // Button Count, Hat Switch Count
     true, true, false, // X, Y, Z
     false, false, false, // Rx, Ry, Rz
-    true, true); // rudder, throttle
+    true, true, // rudder, throttle
+    false, false, false); // accelerator, brake, steering
 
 void setup() {
 
