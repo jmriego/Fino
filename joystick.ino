@@ -68,6 +68,7 @@ void updateEffects(bool recalculate){
         lastVelY = velY;
         lastAccelX = accelX;
         lastAccelY = accelY;
+        Joystick.DumpEffects();
     } else {
         effects[0].frictionPositionChange = lastVelX;
         effects[1].frictionPositionChange = lastVelY;

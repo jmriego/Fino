@@ -73,10 +73,10 @@ void PIDReportHandler::FreeAllEffects(void)
 	memset((void*)& springEffect, 0, sizeof(springEffect));
     springEffect.reportId = 1;
     springEffect.effectBlockIndex = 0;
-    springEffect.effectType = 0x08; // TODO: include from PIDReportType
+    springEffect.effectType = USB_EFFECT_SPRING;
     springEffect.duration = 0xFF;
     springEffect.gain = 255;
-    springEffect.enableAxis = 0x01; // TODO: include from PIDReportType
+    springEffect.enableAxis = DIRECTION_ENABLE;
     SetEffect(&springEffect);
 
     USB_FFBReport_SetCondition_Output_Data_t springCondition;
@@ -96,6 +96,28 @@ void PIDReportHandler::FreeAllEffects(void)
         springCondition.parameterBlockOffset = i;
         SetCondition(&springCondition, &g_EffectStates[0]);
     }
+    StartEffect(0);
+}
+
+void PIDReportHandler::DumpEffects(void)
+{
+
+    uint8_t* effectsMemory;
+    uint8_t len = sizeof(TEffectState);
+    effectsMemory = (uint8_t*) &g_EffectStates;
+	for (uint8_t id = 0; id < nextEID; id++)
+    {
+        for (uint16_t i=0; i<len; ++i) {
+         if (effectsMemory[id*len + i] < 0x10) {
+           Serial.print("0");
+         }
+         Serial.print(effectsMemory[id*len + i], HEX);
+        }
+        Serial.print(" ");
+        Serial.println("");
+    }
+    Serial.println("");
+    Serial.println("");
 }
 
 void PIDReportHandler::EffectOperation(USB_FFBReport_EffectOperation_Output_Data_t* data)

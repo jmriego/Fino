@@ -568,20 +568,17 @@ int32_t Joystick_::getEffectForce(volatile TEffectState& effect, EffectParams _e
 }
 
 
+void Joystick_::DumpEffects(void)
+{
+    DynamicHID().pidReportHandler.DumpEffects();
+}
+
 void Joystick_::forceCalculator(int32_t* forces) {
     forces[0] = 0;
     forces[1] = 0;
         int32_t force = 0;
 	    for (int id = 0; id < MAX_EFFECTS; id++) {
 	    	volatile TEffectState& effect = DynamicHID().pidReportHandler.g_EffectStates[id];
-
-            Serial.print("id:");
-            Serial.print(id);
-            Serial.print("state:");
-            Serial.print(effect.state);
-            Serial.print("effectType:");
-            Serial.print(effect.effectType);
-            Serial.println("");
 
             effect.elapsedTime = (uint64_t)millis() - effect.startTime;
             // totalDuration counts all repetitions (duration+delay) * loopCount

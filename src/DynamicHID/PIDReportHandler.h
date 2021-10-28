@@ -27,6 +27,7 @@ public:
 	void StopAllEffects(void);
 	void FreeEffect(uint8_t id);
 	void FreeAllEffects(void);
+	void DumpEffects(void);
 
 	//handle output pid report
 	void EffectOperation(USB_FFBReport_EffectOperation_Output_Data_t* data);
