@@ -1,5 +1,11 @@
 #ifndef _PIDREPORTHANDLER_H
 #define _PIDREPORTHANDLER_H
+
+// Bit-masks for effect states
+#define MDEVICESTATE_FREE   0x00
+#define MDEVICESTATE_PAUSED 0x01
+#define MDEVICESTATE_SPRING 0x02
+
 #include <Arduino.h>
 #include "PIDReportType.h"
 
@@ -10,7 +16,7 @@ public:
 	// Effect management
 	volatile uint8_t nextEID;  // FFP effect indexes starts from 1
 	volatile TEffectState  g_EffectStates[MAX_EFFECTS + 1];
-	volatile uint8_t devicePaused;
+	volatile uint8_t deviceState;
 	//variables for storing previous values
 	volatile int32_t inertiaT = 0;
 	volatile int16_t oldSpeed = 0;
@@ -27,7 +33,6 @@ public:
 	void StopAllEffects(void);
 	void FreeEffect(uint8_t id);
 	void FreeAllEffects(void);
-	void DumpEffects(void);
 
 	//handle output pid report
 	void EffectOperation(USB_FFBReport_EffectOperation_Output_Data_t* data);

@@ -14,6 +14,7 @@
 #define sawtoothdownGain default_gain
 #define sawtoothupGain default_gain
 #define springGain default_gain
+#define defaultSpringGain default_gain
 #define inertiaGain default_gain
 #define frictionGain 0.25
 #define damperGain default_gain

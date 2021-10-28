@@ -3,7 +3,7 @@
 PIDReportHandler::PIDReportHandler() 
 {
 	nextEID = 1;
-	devicePaused = 0;
+	deviceState = MDEVICESTATE_SPRING;
 }
 
 PIDReportHandler::~PIDReportHandler() 
@@ -68,56 +68,6 @@ void PIDReportHandler::FreeAllEffects(void)
 	nextEID = 1;
 	memset((void*)& g_EffectStates, 0, sizeof(g_EffectStates));
 	pidBlockLoad.ramPoolAvailable = MEMORY_SIZE;
-
-    USB_FFBReport_SetEffect_Output_Data_t springEffect;
-	memset((void*)& springEffect, 0, sizeof(springEffect));
-    springEffect.reportId = 1;
-    springEffect.effectBlockIndex = 0;
-    springEffect.effectType = USB_EFFECT_SPRING;
-    springEffect.duration = 0xFF;
-    springEffect.gain = 255;
-    springEffect.enableAxis = DIRECTION_ENABLE;
-    SetEffect(&springEffect);
-
-    USB_FFBReport_SetCondition_Output_Data_t springCondition;
-	memset((void*)& springCondition, 0, sizeof(springCondition));
-    springCondition.reportId = 3;
-    springCondition.effectBlockIndex = 0;
-    springCondition.cpOffset = 0;
-    springCondition.positiveCoefficient = 10000;
-    springCondition.negativeCoefficient = 10000;
-    springCondition.positiveSaturation = 10000;
-    springCondition.negativeSaturation = 10000;
-    springCondition.deadBand = 0;
-
-
-    for (int i=0; i<FFB_AXIS_COUNT; ++i)
-    {
-        springCondition.parameterBlockOffset = i;
-        SetCondition(&springCondition, &g_EffectStates[0]);
-    }
-    StartEffect(0);
-}
-
-void PIDReportHandler::DumpEffects(void)
-{
-
-    uint8_t* effectsMemory;
-    uint8_t len = sizeof(TEffectState);
-    effectsMemory = (uint8_t*) &g_EffectStates;
-	for (uint8_t id = 0; id < nextEID; id++)
-    {
-        for (uint16_t i=0; i<len; ++i) {
-         if (effectsMemory[id*len + i] < 0x10) {
-           Serial.print("0");
-         }
-         Serial.print(effectsMemory[id*len + i], HEX);
-        }
-        Serial.print(" ");
-        Serial.println("");
-    }
-    Serial.println("");
-    Serial.println("");
 }
 
 void PIDReportHandler::EffectOperation(USB_FFBReport_EffectOperation_Output_Data_t* data)
@@ -187,18 +137,20 @@ void PIDReportHandler::DeviceControl(USB_FFBReport_DeviceControl_Output_Data_t* 
 	else if (control == 0x03)
 	{ // 3=Stop All Effects
 		StopAllEffects();
+		deviceState &= ~(MDEVICESTATE_SPRING);
 	}
 	else if (control == 0x04)
 	{ //  4=Reset
 		FreeAllEffects();
+		deviceState |= MDEVICESTATE_SPRING;
 	}
 	else if (control == 0x05)
 	{ // 5=Pause
-		devicePaused = 1;
+		deviceState |= MDEVICESTATE_PAUSED;
 	}
 	else if (control == 0x06)
 	{ // 6=Continue
-		devicePaused = 0;
+		deviceState &= ~(MDEVICESTATE_PAUSED);
 	}
 	else if (control & (0xFF - 0x3F))
 	{
@@ -243,22 +195,22 @@ void PIDReportHandler::SetEffect(USB_FFBReport_SetEffect_Output_Data_t* data)
         uint8_t loopCount = effect->loopCount > 0 ? effect->loopCount : 1;
         effect->totalDuration = (data->duration + data->startDelay) * loopCount;
     }
-	//Serial.print("lC: ");
-	//Serial.println(effect->loopCount);
-	//Serial.print("d: ");
-	//Serial.print(effect->duration);
-	//Serial.print("tD: ");
-	//Serial.println(effect->totalDuration);
-	//Serial.print("sD: ");
-	//Serial.println(effect->startDelay);
-	//Serial.print("dX: ");
-	//Serial.print(effect->directionX);
-	//Serial.print(" dX: ");
-	//Serial.print(effect->directionY);
-	//Serial.print(" eT: ");
-	//Serial.print(effect->effectType);
-	//Serial.print(" eA: ");
-	//Serial.println(effect->enableAxis);
+	// Serial.print("lC: ");
+	// Serial.print(effect->loopCount);
+	// Serial.print(" d: ");
+	// Serial.print(effect->duration);
+	// Serial.print(" tD: ");
+	// Serial.print(effect->totalDuration);
+	// Serial.print(" sD: ");
+	// Serial.print(effect->startDelay);
+	// Serial.print(" dX: ");
+	// Serial.print(effect->direction[0]);
+	// Serial.print(" dY: ");
+	// Serial.print(effect->direction[1]);
+	// Serial.print(" eT: ");
+	// Serial.print(effect->effectType);
+	// Serial.print(" eA: ");
+	// Serial.println(effect->enableAxis);
 	//  effect->triggerRepeatInterval;
 	//  effect->samplePeriod;   // 0..32767 ms
 	//  effect->triggerButton;
@@ -332,7 +284,8 @@ void PIDReportHandler::CreateNewEffect(USB_FFBReport_CreateNewEffect_Feature_Dat
 void PIDReportHandler::UppackUsbData(uint8_t* data, uint16_t len)
 {
 	//Serial.print("len:");
-	//Serial.println(len);
+	//Serial.print(len);
+	//Serial.print("=");
     //for (uint16_t i=0; i<len; ++i) {
     //  if (data[i] < 0xA0) {
     //    Serial.print(" ");

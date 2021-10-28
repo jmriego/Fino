@@ -570,13 +570,24 @@ int32_t Joystick_::getEffectForce(volatile TEffectState& effect, EffectParams _e
 
 void Joystick_::DumpEffects(void)
 {
-    DynamicHID().pidReportHandler.DumpEffects();
+    DynamicHID().pidReportHandler.FreeAllEffects();
 }
 
 void Joystick_::forceCalculator(int32_t* forces) {
     forces[0] = 0;
     forces[1] = 0;
-        int32_t force = 0;
+
+    // If the device is in default auto spring effect lets calculate it
+    if (DynamicHID().pidReportHandler.deviceState == MDEVICESTATE_SPRING)
+    {
+        for (int axis = 0; axis < FFB_AXIS_COUNT; ++axis)
+        {
+	    	forces[axis] = (int32_t)(NormalizeRange(m_effect_params[axis].springPosition, m_effect_params[axis].springMaxPosition) * -10000 * defaultSpringGain);
+        }
+    }
+    else
+    {
+
 	    for (int id = 0; id < MAX_EFFECTS; id++) {
 	    	volatile TEffectState& effect = DynamicHID().pidReportHandler.g_EffectStates[id];
 
@@ -596,7 +607,7 @@ void Joystick_::forceCalculator(int32_t* forces) {
 	    	    (effect.elapsedTime >= 0) &&
                 // dont calculate effects that have already finished
 	    	    (effect.elapsedTime <= effect.duration) &&
-	    		!DynamicHID().pidReportHandler.devicePaused)
+	    		!DynamicHID().pidReportHandler.deviceState)
             {
                 // if this is a directional conditional calculate the conditional parameters
                 // as the length in the direction of its angle. This is the same as the dot product of the vectors
@@ -634,6 +645,7 @@ void Joystick_::forceCalculator(int32_t* forces) {
             //    Serial.println(effect.totalDuration);
             //}
 	    }
+    }
 
     for (int axis = 0; axis < FFB_AXIS_COUNT; ++axis)
     {

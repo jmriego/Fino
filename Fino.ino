@@ -68,7 +68,7 @@ void loop(){
         // we calculate condition forces every 100ms or more frequently if we get position updates
         if (currentMillis >= nextEffectsMillis || pos_updated) {
             updateEffects(true);
-            nextEffectsMillis = currentMillis + 1000;
+            nextEffectsMillis = currentMillis + 100;
             pos_updated = false;
         } else {
             // calculate forces without recalculating condition forces
