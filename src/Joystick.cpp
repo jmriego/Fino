@@ -567,12 +567,6 @@ int32_t Joystick_::getEffectForce(volatile TEffectState& effect, EffectParams _e
 		return force;
 }
 
-
-void Joystick_::DumpEffects(void)
-{
-    DynamicHID().pidReportHandler.FreeAllEffects();
-}
-
 void Joystick_::forceCalculator(int32_t* forces) {
     forces[0] = 0;
     forces[1] = 0;

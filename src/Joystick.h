@@ -171,7 +171,6 @@ public:
 
 	void begin(bool initAutoSendState = true);
 	void end();
-	void DumpEffects(void);
 	// Set Range Functions
 	inline void setXAxisRange(int16_t minimum, int16_t maximum)
 	{
