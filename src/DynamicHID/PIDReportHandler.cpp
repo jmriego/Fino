@@ -3,7 +3,7 @@
 PIDReportHandler::PIDReportHandler() 
 {
 	nextEID = 1;
-	devicePaused = 0;
+	deviceState = MDEVICESTATE_SPRING;
 }
 
 PIDReportHandler::~PIDReportHandler() 
@@ -137,18 +137,20 @@ void PIDReportHandler::DeviceControl(USB_FFBReport_DeviceControl_Output_Data_t* 
 	else if (control == 0x03)
 	{ // 3=Stop All Effects
 		StopAllEffects();
+		deviceState &= ~(MDEVICESTATE_SPRING);
 	}
 	else if (control == 0x04)
 	{ //  4=Reset
 		FreeAllEffects();
+		deviceState |= MDEVICESTATE_SPRING;
 	}
 	else if (control == 0x05)
 	{ // 5=Pause
-		devicePaused = 1;
+		deviceState |= MDEVICESTATE_PAUSED;
 	}
 	else if (control == 0x06)
 	{ // 6=Continue
-		devicePaused = 0;
+		deviceState &= ~(MDEVICESTATE_PAUSED);
 	}
 	else if (control & (0xFF - 0x3F))
 	{
@@ -193,22 +195,22 @@ void PIDReportHandler::SetEffect(USB_FFBReport_SetEffect_Output_Data_t* data)
         uint8_t loopCount = effect->loopCount > 0 ? effect->loopCount : 1;
         effect->totalDuration = (data->duration + data->startDelay) * loopCount;
     }
-	//Serial.print("lC: ");
-	//Serial.println(effect->loopCount);
-	//Serial.print("d: ");
-	//Serial.print(effect->duration);
-	//Serial.print("tD: ");
-	//Serial.println(effect->totalDuration);
-	//Serial.print("sD: ");
-	//Serial.println(effect->startDelay);
-	//Serial.print("dX: ");
-	//Serial.print(effect->directionX);
-	//Serial.print(" dX: ");
-	//Serial.print(effect->directionY);
-	//Serial.print(" eT: ");
-	//Serial.print(effect->effectType);
-	//Serial.print(" eA: ");
-	//Serial.println(effect->enableAxis);
+	// Serial.print("lC: ");
+	// Serial.print(effect->loopCount);
+	// Serial.print(" d: ");
+	// Serial.print(effect->duration);
+	// Serial.print(" tD: ");
+	// Serial.print(effect->totalDuration);
+	// Serial.print(" sD: ");
+	// Serial.print(effect->startDelay);
+	// Serial.print(" dX: ");
+	// Serial.print(effect->direction[0]);
+	// Serial.print(" dY: ");
+	// Serial.print(effect->direction[1]);
+	// Serial.print(" eT: ");
+	// Serial.print(effect->effectType);
+	// Serial.print(" eA: ");
+	// Serial.println(effect->enableAxis);
 	//  effect->triggerRepeatInterval;
 	//  effect->samplePeriod;   // 0..32767 ms
 	//  effect->triggerButton;
@@ -282,7 +284,8 @@ void PIDReportHandler::CreateNewEffect(USB_FFBReport_CreateNewEffect_Feature_Dat
 void PIDReportHandler::UppackUsbData(uint8_t* data, uint16_t len)
 {
 	//Serial.print("len:");
-	//Serial.println(len);
+	//Serial.print(len);
+	//Serial.print("=");
     //for (uint16_t i=0; i<len; ++i) {
     //  if (data[i] < 0xA0) {
     //    Serial.print(" ");

@@ -1,0 +1,36 @@
+name: Arduino
+
+on:
+  push:
+    tags: ['v*']
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup Arduino CLI
+      uses: arduino/setup-arduino-cli@v1.1.1
+
+    - name: Install Arduino Micro platform
+      run: |
+          arduino-cli core update-index
+          arduino-cli core install arduino:avr
+
+    - name: Compile Fino Arduino Sketch
+      run: |
+          mkdir -p build/arduino.avr.micro
+          arduino-cli compile --fqbn arduino:avr:micro --verbose --output-dir build/arduino.avr.micro
+
+    - name: Upload Arduino sketch artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: Artifact.Fino
+        path: build/arduino.avr.micro/Fino.ino.hex
+
+
