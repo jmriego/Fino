@@ -53,11 +53,21 @@ void get_messages_from_serial()
           write_i32(SKETCH_VERSION);
           break;
         }
-  			// Unknown order
-  			default:
+        case CONFIG:
+        {
+          float defaultSpringGain = read_i8() / 100.0;
+
+          Gains gains[FFB_AXIS_COUNT];
+          gains[0].defaultSpringGain = defaultSpringGain;
+          gains[1].defaultSpringGain = defaultSpringGain;
+          Joystick.setGains(gains);
+          break;
+        }
+        // Unknown order
+        default:
           write_order(ERROR);
           write_i16(404);
-  				return;
+          return;
       }
     }
     write_order(RECEIVED); // Confirm the reception
