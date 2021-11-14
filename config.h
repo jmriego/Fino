@@ -5,6 +5,7 @@
 // --------------------------
 
 #define default_gain 1.0
+#define friction_gain 0.25
 #define damperSplineNumPoints 6
 
 // comment out this line if you don't want to have a spline configuration for the damper

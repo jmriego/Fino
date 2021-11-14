@@ -57,10 +57,9 @@ void get_messages_from_serial()
         {
           float defaultSpringGain = read_i8() / 100.0;
 
-          Gains gains[FFB_AXIS_COUNT];
+          Gains *gains = Joystick.getGains();
           gains[0].defaultSpringGain = defaultSpringGain;
           gains[1].defaultSpringGain = defaultSpringGain;
-          Joystick.setGains(gains);
           break;
         }
         // Unknown order
