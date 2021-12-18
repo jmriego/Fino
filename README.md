@@ -2,7 +2,7 @@
 
 ## Fino will make a Force Feedback Joystick out of your Arduino
 ### It requires an ATMega32UX chip device such as an Arduino Micro
-### Experimental support for the DUE
+### or an Arduino Due would also work if you require more memory
 
 ## Usage
 
@@ -12,7 +12,7 @@ There are two different ways you can use this sketch:
 
 ## In testing
 
-There is currently experimental support for driving wheels on the [wheel](https://github.com/jmriego/Fino/tree/wheel) branch and for using an Arduino DUE on the [due](https://github.com/jmriego/Fino/tree/due) branch. I don't own any of these two devices so if you want to donate them or if testing them yourself please let me know how it's working for you.
+There is currently experimental support for driving wheels on the [wheel](https://github.com/jmriego/Fino/tree/wheel) branch.com/jmriego/Fino/tree/due) branch. I don't own any wheel or similar I could use for testing so if you want to donate them or if you are testing them yourself please let me know how it's working for you.
 
 ## Ref
 
