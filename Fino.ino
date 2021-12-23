@@ -1,4 +1,5 @@
 #define DEBUGNO
+//#define COMINO
 // the digits mean Mmmmrrr (M=Major,m=minor,r=revision)
 #define SKETCH_VERSION 3000001
 
@@ -12,6 +13,7 @@
 unsigned long lastEffectsUpdate;
 unsigned long nextJoystickMillis;
 unsigned long nextEffectsMillis;
+unsigned long nextLedMillis;
 
 // --------------------------
 // Joystick related variables
@@ -48,20 +50,30 @@ void setup() {
     setupJoystick();
 
     // setup communication
-    Serial.begin(SERIAL_BAUD);
+    #ifdef COMINO
+    SerialUSB.begin(SERIAL_BAUD);
+    #endif
+    
+    pinMode(LED_BUILTIN, OUTPUT);
     // setup timing and run them as soon as possible
     lastEffectsUpdate = 0;
     nextJoystickMillis = 0;
     nextEffectsMillis = 0;
+    nextLedMillis = 0;
 }
 
 void loop(){
+    #ifdef COMINO
     get_messages_from_serial();
+    #endif
 
     unsigned long currentMillis;
     currentMillis = millis();
     // do not run more frequently than these many milliseconds
     if (currentMillis >= nextJoystickMillis) {
+        pos[0] = forces[0];
+        pos[1] = forces[1];
+        pos_updated = true;
         updateJoystickPos();
         nextJoystickMillis = currentMillis + 2;
 
@@ -77,9 +89,16 @@ void loop(){
             updateEffects(false);
         }
 
+        #ifdef COMINO
         if (forces_requested) {
             sendForces();
             forces_requested = false;
         }
+        #endif
+    }
+
+    if (currentMillis >= nextLedMillis) {
+        digitalWrite(LED_BUILTIN, forces[0] == 0 ? LOW : HIGH);
+        nextLedMillis = currentMillis + 500;
     }
 }

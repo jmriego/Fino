@@ -1,3 +1,4 @@
+#ifdef COMINO
 void sendForces() {
     write_order(FORCES);
     write_i32(forces[0]);
@@ -6,7 +7,7 @@ void sendForces() {
 
 void get_messages_from_serial()
 {
-  if(Serial.available() > 0)
+  if(SerialUSB.available() > 0)
   {
     // The first byte received is the instruction
     Order order_received = read_order();
@@ -76,14 +77,14 @@ void get_messages_from_serial()
 
 Order read_order()
 {
-	return (Order) Serial.read();
+	return (Order) SerialUSB.read();
 }
 
 void wait_for_bytes(int num_bytes, unsigned long timeout)
 {
 	unsigned long startTime = millis();
 	//Wait for incoming bytes or exit if timeout
-	while ((Serial.available() < num_bytes) && (millis() - startTime < timeout)){}
+	while ((SerialUSB.available() < num_bytes) && (millis() - startTime < timeout)){}
 }
 
 // NOTE : Serial.readBytes is SLOW
@@ -94,7 +95,7 @@ void read_signed_bytes(int8_t* buffer, size_t n)
 	int c;
 	while (i < n)
 	{
-		c = Serial.read();
+		c = SerialUSB.read();
 		if (c < 0) break;
 		*buffer++ = (int8_t) c; // buffer[i] = (int8_t)c;
 		i++;
@@ -104,7 +105,7 @@ void read_signed_bytes(int8_t* buffer, size_t n)
 int8_t read_i8()
 {
 	wait_for_bytes(1, 100); // Wait for 1 byte with a timeout of 100 ms
-  return (int8_t) Serial.read();
+  return (int8_t) SerialUSB.read();
 }
 
 int16_t read_i16()
@@ -126,22 +127,24 @@ int32_t read_i32()
 void write_order(enum Order myOrder)
 {
 	uint8_t* Order = (uint8_t*) &myOrder;
-  Serial.write(Order, sizeof(uint8_t));
+  SerialUSB.write(Order, sizeof(uint8_t));
 }
 
 void write_i8(int8_t num)
 {
-  Serial.write(num);
+  SerialUSB.write(num);
 }
 
 void write_i16(int16_t num)
 {
 	int8_t buffer[2] = {(int8_t) (num & 0xff), (int8_t) (num >> 8)};
-  Serial.write((uint8_t*)&buffer, 2*sizeof(int8_t));
+  SerialUSB.write((uint8_t*)&buffer, 2*sizeof(int8_t));
 }
 
 void write_i32(int32_t num)
 {
 	int8_t buffer[4] = {(int8_t) (num & 0xff), (int8_t) (num >> 8 & 0xff), (int8_t) (num >> 16 & 0xff), (int8_t) (num >> 24 & 0xff)};
-  Serial.write((uint8_t*)&buffer, 4*sizeof(int8_t));
+  SerialUSB.write((uint8_t*)&buffer, 4*sizeof(int8_t));
 }
+
+#endif
