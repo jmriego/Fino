@@ -120,19 +120,21 @@ int DynamicHID_::RecvData(byte* data)
 	return count;
 }
 
-void DynamicHID_::RecvfromUsb() 
+void DynamicHID_::RecvfromUsb(int32_t* debug)
 {
     if (Is_udd_out_received(PID_ENDPOINT_OUT)) {
         udd_ack_out_received(PID_ENDPOINT_OUT);
+        debug[1] = 1;
     }
 
-    if (usb_Available() > 0) {
+    int32_t prueba = USB_Available(PID_ENDPOINT_OUT);
+    if (prueba > 0) {
         uint8_t out_ffbdata[64];
         uint16_t len = USB_Recv(PID_ENDPOINT_OUT, &out_ffbdata, 64);
         if (len >= 0) {
+            // debug[0] = debug[0] + len;
             pidReportHandler.UppackUsbData(out_ffbdata, len);
         }
-        udd_ack_fifocon(PID_ENDPOINT_OUT);
     }
 }
 
@@ -264,7 +266,7 @@ int DynamicHID_::begin(void)
 }
 
 bool DynamicHID_::usb_Available() {
-	return USB_Available(PID_ENDPOINT_OUT);
+	return USB_Available(PID_ENDPOINT_OUT) > 0;
 }
 
 #endif /* if defined(USBCON) */

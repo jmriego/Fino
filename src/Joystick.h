@@ -237,7 +237,7 @@ public:
 	void sendState();
 
 	//force feedback Interfaces
-	void getForce(int32_t* forces);
+	void getForce(int32_t* forces, int32_t* debug);
 
 
     Gains *getGains() {

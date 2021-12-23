@@ -82,7 +82,7 @@ void updateEffects(bool recalculate){
     }
 
     Joystick.setEffectParams(effects);
-    Joystick.getForce(forces);
+    Joystick.getForce(forces, debug);
 
     #ifdef DEBUG
     if (diffTime > 0 && recalculate) {

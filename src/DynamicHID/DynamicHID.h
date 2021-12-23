@@ -32,7 +32,7 @@
   #define USB_EP_SIZE 64
   #define TRANSFER_PGM 0x80
 
-  #include "USBD/PluggableUSB.h"
+  #include "USB/PluggableUSB.h"
 #else
   #include "PluggableUSB.h"
 #endif
@@ -121,7 +121,7 @@ public:
   bool usb_Available();
   int SendReport(uint8_t id, const void* data, int len);
   int RecvData(byte* data);
-  void RecvfromUsb();
+  void RecvfromUsb(int32_t* debug);
   void AppendDescriptor(DynamicHIDSubDescriptor* node);
   PIDReportHandler pidReportHandler;
 

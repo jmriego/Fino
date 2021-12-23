@@ -28,6 +28,7 @@ bool forces_requested = false;
 bool pos_updated = false;
 
 int16_t pos[2] = {0, 0};
+int32_t debug[2] = {0, 0};
 int lastX;
 int lastY;
 int lastVelX;
@@ -59,7 +60,6 @@ void setup() {
     lastEffectsUpdate = 0;
     nextJoystickMillis = 0;
     nextEffectsMillis = 0;
-    nextLedMillis = 0;
 }
 
 void loop(){
@@ -71,17 +71,19 @@ void loop(){
     currentMillis = millis();
     // do not run more frequently than these many milliseconds
     if (currentMillis >= nextJoystickMillis) {
-        pos[0] = forces[0];
-        pos[1] = forces[1];
-        pos_updated = true;
         updateJoystickPos();
         nextJoystickMillis = currentMillis + 2;
 
         // we calculate condition forces every 100ms or more frequently if we get position updates
         if (currentMillis >= nextEffectsMillis || pos_updated) {
             updateEffects(true);
-            nextEffectsMillis = currentMillis + 100;
+            nextEffectsMillis = currentMillis + 500;
             pos_updated = false;
+            
+            pos[0] = forces[0];
+            pos[1] = debug[1];
+            debug[0] = 0;
+            debug[1] = 0;
         } else {
             // calculate forces without recalculating condition forces
             // this helps having smoother spring/damper/friction
@@ -95,10 +97,5 @@ void loop(){
             forces_requested = false;
         }
         #endif
-    }
-
-    if (currentMillis >= nextLedMillis) {
-        digitalWrite(LED_BUILTIN, forces[0] == 0 ? LOW : HIGH);
-        nextLedMillis = currentMillis + 500;
     }
 }
