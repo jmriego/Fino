@@ -14,6 +14,7 @@ unsigned long lastEffectsUpdate;
 unsigned long nextJoystickMillis;
 unsigned long nextEffectsMillis;
 unsigned long nextLedMillis;
+bool ledStatus;
 
 // --------------------------
 // Joystick related variables
@@ -60,6 +61,8 @@ void setup() {
     lastEffectsUpdate = 0;
     nextJoystickMillis = 0;
     nextEffectsMillis = 0;
+    nextLedMillis = 0;
+    ledStatus = false;
 }
 
 void loop(){
@@ -69,6 +72,11 @@ void loop(){
 
     unsigned long currentMillis;
     currentMillis = millis();
+    if (currentMillis >= nextLedMillis) {
+        ledStatus = !ledStatus;
+        digitalWrite(LED_BUILTIN, ledStatus ? HIGH : LOW);
+        nextLedMillis += 1000;
+    }
     // do not run more frequently than these many milliseconds
     if (currentMillis >= nextJoystickMillis) {
         updateJoystickPos();
