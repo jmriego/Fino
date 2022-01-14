@@ -1,5 +1,5 @@
 #define DEBUGNO
-//#define COMINO
+#define COMINO
 // the digits mean Mmmmrrr (M=Major,m=minor,r=revision)
 #define SKETCH_VERSION 3000001
 
@@ -13,8 +13,6 @@
 unsigned long lastEffectsUpdate;
 unsigned long nextJoystickMillis;
 unsigned long nextEffectsMillis;
-unsigned long nextLedMillis;
-bool ledStatus;
 
 // --------------------------
 // Joystick related variables
@@ -29,7 +27,6 @@ bool forces_requested = false;
 bool pos_updated = false;
 
 int16_t pos[2] = {0, 0};
-int32_t debug[2] = {0, 0};
 int lastX;
 int lastY;
 int lastVelX;
@@ -53,16 +50,13 @@ void setup() {
 
     // setup communication
     #ifdef COMINO
-    SerialUSB.begin(SERIAL_BAUD);
+    Serial.begin(SERIAL_BAUD);
     #endif
     
-    pinMode(LED_BUILTIN, OUTPUT);
     // setup timing and run them as soon as possible
     lastEffectsUpdate = 0;
     nextJoystickMillis = 0;
     nextEffectsMillis = 0;
-    nextLedMillis = 0;
-    ledStatus = false;
 }
 
 void loop(){
@@ -72,11 +66,6 @@ void loop(){
 
     unsigned long currentMillis;
     currentMillis = millis();
-    if (currentMillis >= nextLedMillis) {
-        ledStatus = !ledStatus;
-        digitalWrite(LED_BUILTIN, ledStatus ? HIGH : LOW);
-        nextLedMillis += 1000;
-    }
     // do not run more frequently than these many milliseconds
     if (currentMillis >= nextJoystickMillis) {
         updateJoystickPos();
@@ -85,13 +74,8 @@ void loop(){
         // we calculate condition forces every 100ms or more frequently if we get position updates
         if (currentMillis >= nextEffectsMillis || pos_updated) {
             updateEffects(true);
-            nextEffectsMillis = currentMillis + 500;
+            nextEffectsMillis = currentMillis + 100;
             pos_updated = false;
-            
-            pos[0] = forces[0];
-            pos[1] = debug[1];
-            debug[0] = 0;
-            debug[1] = 0;
         } else {
             // calculate forces without recalculating condition forces
             // this helps having smoother spring/damper/friction

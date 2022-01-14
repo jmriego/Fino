@@ -283,16 +283,14 @@ void PIDReportHandler::CreateNewEffect(USB_FFBReport_CreateNewEffect_Feature_Dat
 
 void PIDReportHandler::UppackUsbData(uint8_t* data, uint16_t len)
 {
-    //Serial.write((uint8_t)6);
 	//Serial.print("len:");
 	//Serial.print(len);
 	//Serial.print("=");
     //for (uint16_t i=0; i<len; ++i) {
-    // if (data[i] < 0x10) {
-    //   Serial.print("0");
-    // }
-    // Serial.print(data[i], HEX);
-    // Serial.print(" ");
+    //  if (data[i] < 0xA0) {
+    //    Serial.print(" ");
+    //  }
+    //  Serial.print(data[i], HEX);
     //}
     //Serial.println("");
 	uint8_t effectId = data[1]; // effectBlockIndex is always the second byte.

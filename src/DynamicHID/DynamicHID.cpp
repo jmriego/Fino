@@ -20,7 +20,6 @@
  */
 
 #include "DynamicHID.h"
-#include "Arduino.h"
 
 #if defined(USBCON)
 
@@ -45,7 +44,7 @@ int DynamicHID_::getInterface(uint8_t* interfaceCount)
 		D_INTERFACE(pluggedInterface, PID_ENPOINT_COUNT, USB_DEVICE_CLASS_HUMAN_INTERFACE, DYNAMIC_HID_SUBCLASS_NONE, DYNAMIC_HID_PROTOCOL_NONE),
 		D_HIDREPORT(descriptorSize),
 		D_ENDPOINT(USB_ENDPOINT_IN(PID_ENDPOINT_IN), USB_ENDPOINT_TYPE_INTERRUPT, USB_EP_SIZE, 0x01),
-		D_ENDPOINT(USB_ENDPOINT_OUT(PID_ENDPOINT_OUT), EP_TYPE_INTERRUPT_OUT, USB_EP_SIZE, 0x01)
+		D_ENDPOINT(USB_ENDPOINT_OUT(PID_ENDPOINT_OUT), USB_ENDPOINT_TYPE_INTERRUPT, USB_EP_SIZE, 0x01)
 	};
 	return USB_SendControl(0, &hidInterface, sizeof(hidInterface));
 }
@@ -114,34 +113,21 @@ int DynamicHID_::SendReport(uint8_t id, const void* data, int len)
 int DynamicHID_::RecvData(byte* data)
 {
 	int count = 0;
-	while (usb_Available()) {
+	while (usb_Available() > 0) {
 		data[count++] = USB_Recv(PID_ENDPOINT_OUT);
 	}
 	return count;
 }
 
-void DynamicHID_::RecvfromUsb(int32_t* debug)
+void DynamicHID_::RecvfromUsb()
 {
-    if (Is_udd_out_received(PID_ENDPOINT_OUT)) {
-        udd_ack_out_received(PID_ENDPOINT_OUT);
-        debug[1] = 1;
-    }
-
-    bool at_least_once = false;
-
-    while (USB_Available(PID_ENDPOINT_OUT))
-    {
-        at_least_once = true;
-        uint8_t out_ffbdata[64];
-        uint16_t len = USB_Recv(PID_ENDPOINT_OUT, &out_ffbdata, 64);
-        if (len >= 0) {
-            debug[0] = debug[0] + len;
-            pidReportHandler.UppackUsbData(out_ffbdata, len);
-        }
-    }
-    if (at_least_once) {
-    udd_ack_fifocon(PID_ENDPOINT_OUT);
-    }
+	if (usb_Available() > 0) {
+		uint8_t out_ffbdata[64];
+		uint16_t len = USB_Recv(PID_ENDPOINT_OUT, &out_ffbdata, 64);
+		if (len >= 0) {
+			pidReportHandler.UppackUsbData(out_ffbdata, len);
+		}
+	}
 }
 
 bool DynamicHID_::GetReport(USBSetup& setup) {
@@ -272,7 +258,7 @@ int DynamicHID_::begin(void)
 }
 
 bool DynamicHID_::usb_Available() {
-	return USB_Available(PID_ENDPOINT_OUT) > 0;
+	return USB_Available(PID_ENDPOINT_OUT);
 }
 
 #endif /* if defined(USBCON) */
