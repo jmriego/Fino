@@ -1,5 +1,9 @@
 #define DEBUGNO
 #define COMINO
+#ifdef _VARIANT_ARDUINO_DUE_X_
+#define Serial SerialUSB
+#endif
+
 // the digits mean Mmmmrrr (M=Major,m=minor,r=revision)
 #define SKETCH_VERSION 3000001
 
