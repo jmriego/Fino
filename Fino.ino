@@ -56,6 +56,7 @@ void setup() {
     #ifdef COMINO
     Serial.begin(SERIAL_BAUD);
     #endif
+    // SerialUSB.begin(115200);
     
     // setup timing and run them as soon as possible
     lastEffectsUpdate = 0;
@@ -80,6 +81,9 @@ void loop(){
             updateEffects(true);
             nextEffectsMillis = currentMillis + 100;
             pos_updated = false;
+            // SerialUSB.print(forces[0]);
+            // SerialUSB.print(",");
+            // SerialUSB.println(forces[1]);
         } else {
             // calculate forces without recalculating condition forces
             // this helps having smoother spring/damper/friction
