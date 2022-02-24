@@ -1,4 +1,9 @@
 #define DEBUGNO
+#define COMINO
+#ifdef _VARIANT_ARDUINO_DUE_X_
+#define Serial SerialUSB
+#endif
+
 // the digits mean Mmmmrrr (M=Major,m=minor,r=revision)
 #define SKETCH_VERSION 3000001
 
@@ -48,7 +53,11 @@ void setup() {
     setupJoystick();
 
     // setup communication
+    #ifdef COMINO
     Serial.begin(SERIAL_BAUD);
+    #endif
+    // SerialUSB.begin(115200);
+    
     // setup timing and run them as soon as possible
     lastEffectsUpdate = 0;
     nextJoystickMillis = 0;
@@ -56,7 +65,9 @@ void setup() {
 }
 
 void loop(){
+    #ifdef COMINO
     get_messages_from_serial();
+    #endif
 
     unsigned long currentMillis;
     currentMillis = millis();
@@ -77,9 +88,11 @@ void loop(){
             updateEffects(false);
         }
 
+        #ifdef COMINO
         if (forces_requested) {
             sendForces();
             forces_requested = false;
         }
+        #endif
     }
 }

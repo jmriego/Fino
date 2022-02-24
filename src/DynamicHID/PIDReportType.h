@@ -47,7 +47,7 @@ typedef struct//PID state
 
 ///Host-->Device
 
-typedef struct //FFB: Set Effect Output Report
+typedef struct __attribute__((packed)) //FFB: Set Effect Output Report
 {
 	uint8_t	reportId;	// =1
 	uint8_t	effectBlockIndex;	// 1..40
@@ -62,7 +62,7 @@ typedef struct //FFB: Set Effect Output Report
 	uint8_t	direction[FFB_AXIS_COUNT];	// angle (0=0 .. 255=360deg)
 } USB_FFBReport_SetEffect_Output_Data_t;
 
-typedef struct//FFB: Set Envelope Output Report
+typedef struct __attribute__((packed)) //FFB: Set Envelope Output Report
 {
 	uint8_t	reportId;	// =2
 	uint8_t	effectBlockIndex;	// 1..40
@@ -72,7 +72,7 @@ typedef struct//FFB: Set Envelope Output Report
 	uint16_t	fadeTime;	// ms
 } USB_FFBReport_SetEnvelope_Output_Data_t;
 
-typedef struct// FFB: Set Condition Output Report
+typedef struct __attribute__((packed)) // FFB: Set Condition Output Report
 {
 	uint8_t	reportId;	// =3
 	uint8_t	effectBlockIndex;	// 1..40
@@ -85,7 +85,7 @@ typedef struct// FFB: Set Condition Output Report
 	uint16_t	deadBand;	// 0..255
 } USB_FFBReport_SetCondition_Output_Data_t;
 
-typedef struct//FFB: Set Periodic Output Report
+typedef struct __attribute__((packed)) //FFB: Set Periodic Output Report
 {
 	uint8_t	reportId;	// =4
 	uint8_t	effectBlockIndex;	// 1..40
@@ -95,14 +95,14 @@ typedef struct//FFB: Set Periodic Output Report
 	uint16_t	period;	// 0..32767 ms
 } USB_FFBReport_SetPeriodic_Output_Data_t;
 
-typedef struct//FFB: Set ConstantForce Output Report
+typedef struct __attribute__((packed)) //FFB: Set ConstantForce Output Report
 {
 	uint8_t	reportId;	// =5
 	uint8_t	effectBlockIndex;	// 1..40
 	int16_t magnitude;	// -255..255
 } USB_FFBReport_SetConstantForce_Output_Data_t;
 
-typedef struct//FFB: Set RampForce Output Report
+typedef struct __attribute__((packed)) //FFB: Set RampForce Output Report
 {
 	uint8_t	reportId;	// =6
 	uint8_t	effectBlockIndex;	// 1..40
@@ -110,7 +110,7 @@ typedef struct//FFB: Set RampForce Output Report
 	int16_t	endMagnitude;
 } USB_FFBReport_SetRampForce_Output_Data_t;
 
-typedef struct//FFB: Set CustomForceData Output Report
+typedef struct __attribute__((packed)) //FFB: Set CustomForceData Output Report
 {
 	uint8_t	reportId;	// =7
 	uint8_t	effectBlockIndex;	// 1..40
@@ -118,14 +118,14 @@ typedef struct//FFB: Set CustomForceData Output Report
 	int8_t	data[12];
 } USB_FFBReport_SetCustomForceData_Output_Data_t;
 
-typedef struct//FFB: Set DownloadForceSample Output Report
+typedef struct __attribute__((packed)) //FFB: Set DownloadForceSample Output Report
 {
 	uint8_t	reportId;	// =8
 	int8_t	x;
 	int8_t	y;
 } USB_FFBReport_SetDownloadForceSample_Output_Data_t;
 
-typedef struct//FFB: Set EffectOperation Output Report
+typedef struct __attribute__((packed)) //FFB: Set EffectOperation Output Report
 { 
 	uint8_t	reportId;	// =10
 	uint8_t effectBlockIndex;	// 1..40
@@ -133,25 +133,25 @@ typedef struct//FFB: Set EffectOperation Output Report
 	uint8_t	loopCount;
 } USB_FFBReport_EffectOperation_Output_Data_t;
 
-typedef struct//FFB: Block Free Output Report
+typedef struct __attribute__((packed)) //FFB: Block Free Output Report
 {
 	uint8_t	reportId;	// =11
 	uint8_t effectBlockIndex;	// 1..40
 } USB_FFBReport_BlockFree_Output_Data_t;
 
-typedef struct//FFB: Device Control Output Report
+typedef struct __attribute__((packed)) //FFB: Device Control Output Report
 {
 	uint8_t	reportId;	// =12
 	uint8_t control;	// 1=Enable Actuators, 2=Disable Actuators, 4=Stop All Effects, 8=Reset, 16=Pause, 32=Continue
 } USB_FFBReport_DeviceControl_Output_Data_t;
 
-typedef struct//FFB: DeviceGain Output Report
+typedef struct __attribute__((packed)) //FFB: DeviceGain Output Report
 {
 	uint8_t	reportId;	// =13
 	uint8_t gain;
 } USB_FFBReport_DeviceGain_Output_Data_t;
 
-typedef struct// FFB: Set Custom Force Output Report
+typedef struct __attribute__((packed)) // FFB: Set Custom Force Output Report
 {
 	uint8_t		reportId;	// =14
 	uint8_t effectBlockIndex;	// 1..40
@@ -160,14 +160,14 @@ typedef struct// FFB: Set Custom Force Output Report
 } USB_FFBReport_SetCustomForce_Output_Data_t;
 
 ///Feature
-typedef struct //FFB: Create New Effect Feature Report
+typedef struct __attribute__((packed)) //FFB: Create New Effect Feature Report
 {
 	uint8_t		reportId;	//5
 	uint8_t	effectType;	// Enum (1..12): ET 26,27,30,31,32,33,34,40,41,42,43,28
 	uint16_t	byteCount;	// 0..511
 } USB_FFBReport_CreateNewEffect_Feature_Data_t;
 
-typedef struct// FFB: PID Block Load Feature Report
+typedef struct __attribute__((packed)) // FFB: PID Block Load Feature Report
 {
 	uint8_t	reportId;	// =6
 	uint8_t effectBlockIndex;	// 1..40
@@ -175,7 +175,7 @@ typedef struct// FFB: PID Block Load Feature Report
 	uint16_t	ramPoolAvailable;	// =0 or 0xFFFF?
 } USB_FFBReport_PIDBlockLoad_Feature_Data_t;
 
-typedef struct// FFB: PID Pool Feature Report
+typedef struct __attribute__((packed)) // FFB: PID Pool Feature Report
 {
 	uint8_t	reportId;	// =7
 	uint16_t	ramPoolSize;	// ?

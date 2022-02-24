@@ -1,3 +1,4 @@
+#ifdef COMINO
 void sendForces() {
     write_order(FORCES);
     write_i32(forces[0]);
@@ -145,3 +146,5 @@ void write_i32(int32_t num)
 	int8_t buffer[4] = {(int8_t) (num & 0xff), (int8_t) (num >> 8 & 0xff), (int8_t) (num >> 16 & 0xff), (int8_t) (num >> 24 & 0xff)};
   Serial.write((uint8_t*)&buffer, 4*sizeof(int8_t));
 }
+
+#endif

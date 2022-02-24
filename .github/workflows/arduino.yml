@@ -17,20 +17,31 @@ jobs:
     - name: Setup Arduino CLI
       uses: arduino/setup-arduino-cli@v1.1.1
 
-    - name: Install Arduino Micro platform
+    - name: Install Arduino platform
       run: |
           arduino-cli core update-index
           arduino-cli core install arduino:avr
+          arduino-cli core install arduino:sam
 
-    - name: Compile Fino Arduino Sketch
+    - name: Compile Fino Arduino Sketch for Micro
       run: |
           mkdir -p build/arduino.avr.micro
           arduino-cli compile --fqbn arduino:avr:micro --verbose --output-dir build/arduino.avr.micro
 
-    - name: Upload Arduino sketch artifact
+    - name: Upload Arduino Micro sketch artifact
       uses: actions/upload-artifact@v2
       with:
         name: Artifact.Fino
         path: build/arduino.avr.micro/Fino.ino.hex
 
 
+    - name: Compile Fino Arduino Sketch for Due
+      run: |
+          mkdir -p build/arduino.avr.micro
+          arduino-cli compile --fqbn arduino:sam:arduino_due_x --verbose --output-dir build/arduino.sam.arduino_due_x
+
+    - name: Upload Arduino Due sketch artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: Artifact.Fino
+        path: build/arduino.sam.arduino_due_x/Fino.ino.elf
