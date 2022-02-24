@@ -44,6 +44,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: Artifact.Fino
-        path: build/arduino.sam.arduino_due_x/Fino.ino.hex
-
-
+        path: build/arduino.sam.arduino_due_x/Fino.ino.elf
