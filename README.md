@@ -12,7 +12,7 @@ There are two different ways you can use this sketch:
 
 ## In testing
 
-There is currently experimental support for driving wheels on the [wheel](https://github.com/jmriego/Fino/tree/wheel) branch.com/jmriego/Fino/tree/due) branch. I don't own any wheel or similar I could use for testing so if you want to donate them or if you are testing them yourself please let me know how it's working for you.
+There is currently experimental support for driving wheels on the [wheel](https://github.com/jmriego/Fino/tree/wheel) branch. I don't own any wheel or similar I could use for testing so if you want to donate them or if you are testing them yourself please let me know how it's working for you.
 
 ## Ref
 
