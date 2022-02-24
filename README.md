@@ -21,3 +21,4 @@ There is currently experimental support for driving wheels on the [wheel](https:
 * [hoantv](https://github.com/hoantv/VNWheel)
 * [YukMingLaw](https://github.com/YukMingLaw/ArduinoJoystickWithFFBLibrary) 
 * [arafin](https://github.com/araffin/arduino-robust-serial/)
+* [jimmyberg](https://github.com/jimmyberg/LowPassFilter)
