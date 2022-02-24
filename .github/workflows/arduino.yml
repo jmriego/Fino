@@ -38,12 +38,12 @@ jobs:
     - name: Compile Fino Arduino Sketch for Due
       run: |
           mkdir -p build/arduino.avr.micro
-          arduino-cli compile --fqbn arduino:sam:due --verbose --output-dir build/arduino.sam.due
+          arduino-cli compile --fqbn arduino:sam:arduino_due_x --verbose --output-dir build/arduino.sam.arduino_due_x
 
     - name: Upload Arduino Due sketch artifact
       uses: actions/upload-artifact@v2
       with:
         name: Artifact.Fino
-        path: build/arduino.sam.due/Fino.ino.hex
+        path: build/arduino.sam.arduino_due_x/Fino.ino.hex
 
 
