@@ -81,9 +81,6 @@ void loop(){
             updateEffects(true);
             nextEffectsMillis = currentMillis + 100;
             pos_updated = false;
-            // SerialUSB.print(forces[0]);
-            // SerialUSB.print(",");
-            // SerialUSB.println(forces[1]);
         } else {
             // calculate forces without recalculating condition forces
             // this helps having smoother spring/damper/friction
