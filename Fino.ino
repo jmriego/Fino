@@ -1,4 +1,4 @@
-#define DEBUGNO
+#define NODEBUG
 #define COMINO
 #ifdef _VARIANT_ARDUINO_DUE_X_
 #define Serial SerialUSB
@@ -50,14 +50,14 @@ Joystick_ Joystick(
 
 void setup() {
 
+    ArduinoSetup();
     setupJoystick();
 
     // setup communication
-    #ifdef COMINO
+    #if defined(COMINO) || defined(DEBUG)
     Serial.begin(SERIAL_BAUD);
     #endif
-    // SerialUSB.begin(115200);
-    
+
     // setup timing and run them as soon as possible
     lastEffectsUpdate = 0;
     nextJoystickMillis = 0;
@@ -65,6 +65,8 @@ void setup() {
 }
 
 void loop(){
+    ReadPots();
+
     #ifdef COMINO
     get_messages_from_serial();
     #endif
@@ -95,4 +97,6 @@ void loop(){
         }
         #endif
     }
+
+    DriveMotors();
 }
