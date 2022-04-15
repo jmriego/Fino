@@ -40,7 +40,6 @@ void get_messages_from_serial()
           int16_t y = read_i16();
           pos[0] = x;
           pos[1] = y;
-          pos_updated = true;
           break;
         }
         case FORCES:
@@ -57,6 +56,9 @@ void get_messages_from_serial()
         case CONFIG:
         {
           float defaultSpringGain = read_i8() / 100.0;
+          /* Kp = read_i16() / 1000.0; */
+          /* Ki = read_i16() / 1000.0; */
+          /* Kd = read_i16() / 1000.0; */
 
           Gains *gains = Joystick.getGains();
           gains[0].defaultSpringGain = defaultSpringGain;

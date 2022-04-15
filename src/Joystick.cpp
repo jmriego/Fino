@@ -44,11 +44,7 @@
 #define JOYSTICK_INCLUDE_THROTTLE    B00000010
 #define JOYSTICK_INCLUDE_ACCELERATOR B00000100
 
-const float cutoff_freq_damper   = 2.0;  //Cutoff frequency in Hz
-const float sampling_time_damper = 0.002; //Sampling time in seconds.
-LowPassFilter damperFilter[FFB_AXIS_COUNT];
-LowPassFilter inertiaFilter[FFB_AXIS_COUNT];
-LowPassFilter frictionFilter[FFB_AXIS_COUNT];
+double Setpoint=0, Input=0, Output=0;
 
 #ifdef damperSplineGain
 damperSplineGain;
@@ -69,6 +65,10 @@ Joystick_::Joystick_(
 	bool includeRudder,
 	bool includeThrottle)
 {
+    myPID = new PID(&Input, &Output, &Setpoint, 0.2, 0.0, 0.0, DIRECT);
+    myPID->SetMode(AUTOMATIC);
+    myPID->SetOutputLimits(-10000.0, 10000.0);
+    myPID->SetSampleTime(2);
     // Set the USB HID Report ID
     _hidReportId = hidReportId;
 
@@ -460,17 +460,12 @@ void Joystick_::begin(bool initAutoSendState)
 {
 	_autoSendState = initAutoSendState;
 	sendState();
-    for (int i=0; i <= FFB_AXIS_COUNT; ++i)
-    {
-        damperFilter[i] = LowPassFilter(cutoff_freq_damper, sampling_time_damper);
-        inertiaFilter[i] = LowPassFilter(cutoff_freq_damper, sampling_time_damper);
-        frictionFilter[i] = LowPassFilter(cutoff_freq_damper, sampling_time_damper);
-    }
 }
 
-void Joystick_::getForce(int32_t* forces) {
+void Joystick_::getForce(int32_t* forces, double parKp, double parKi, double parKd) {
 	DynamicHID().RecvfromUsb();
 	forceCalculator(forces);
+    myPID->SetTunings(parKp, parKi, parKd);
 }
 
 float Joystick_::getAngleRatio(volatile TEffectState& effect, int axis)
@@ -534,7 +529,22 @@ int32_t Joystick_::getEffectForce(volatile TEffectState& effect, EffectParams _e
 	    	force = SawtoothUpForceCalculator(effect) * m_gains[axis].sawtoothupGain * angle_ratio;
 	    	break;
 	    case USB_EFFECT_SPRING://8
-	    	force = ConditionForceCalculator(effect, NormalizeRange(_effect_params.springPosition, m_effect_params[axis].springMaxPosition), condition) * angle_ratio * m_gains[axis].springGain;
+            if (axis == 0) {
+                Input = _effect_params.springPosition;
+                myPID->Compute();
+                force = Output;
+            } else {
+	    	    force = ConditionForceCalculator(effect, NormalizeRange(_effect_params.springPosition, m_effect_params[axis].springMaxPosition), condition) * angle_ratio * m_gains[axis].springGain;
+            }
+            // Serial.write((uint8_t)6);
+            // Serial.print(_effect_params.springPosition);
+            // Serial.print(",");
+            // Serial.print(m_effect_params[axis].springMaxPosition);
+            // Serial.print(",");
+            // Serial.print(angle_ratio);
+            // Serial.print(",");
+            // Serial.print(m_gains[axis].springGain);
+            // Serial.println(force);
 	    	break;
 	    case USB_EFFECT_DAMPER://9
 	    	force = ConditionForceCalculator(effect, NormalizeRange(_effect_params.damperVelocity, m_effect_params[axis].damperMaxVelocity), condition) * angle_ratio;
@@ -545,7 +555,6 @@ int32_t Joystick_::getEffectForce(volatile TEffectState& effect, EffectParams _e
             #else
 	    	force = force * m_gains[axis].damperGain;
             #endif
-            force = damperFilter[axis].update(force);
 	    	break;
 	    case USB_EFFECT_INERTIA://10
 	    	if (_effect_params.inertiaAcceleration < 0 && _effect_params.frictionPositionChange < 0) {
@@ -554,11 +563,9 @@ int32_t Joystick_::getEffectForce(volatile TEffectState& effect, EffectParams _e
 	    	else if (_effect_params.inertiaAcceleration < 0 && _effect_params.frictionPositionChange > 0) {
 	    		force = -1 * ConditionForceCalculator(effect, abs(NormalizeRange(_effect_params.inertiaAcceleration, m_effect_params[axis].inertiaMaxAcceleration)), condition) * angle_ratio * m_gains[axis].inertiaGain;
 	    	}
-            force = inertiaFilter[axis].update(force);
 	    	break;
 	    case USB_EFFECT_FRICTION://11
 	    	force = ConditionForceCalculator(effect, NormalizeRange(_effect_params.frictionPositionChange, m_effect_params[axis].frictionMaxPositionChange), condition) * angle_ratio * m_gains[axis].frictionGain;
-            force = frictionFilter[axis].update(force);
 	    	break;
 	    case USB_EFFECT_CUSTOM://12
 	    	break;

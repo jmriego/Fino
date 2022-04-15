@@ -22,6 +22,7 @@
 #define JOYSTICK_h
 
 #include "DynamicHID/DynamicHID.h"
+#include "PID_v1.h"
 
 #if ARDUINO < 10606
 #error The Joystick library requires Arduino IDE 1.6.6 or greater. Please update your IDE.
@@ -236,8 +237,10 @@ public:
 
 	void sendState();
 
+    PID*                     myPID;
+
 	//force feedback Interfaces
-	void getForce(int32_t* forces);
+	void getForce(int32_t* forces, double parKp, double parKi, double parKd);
 
 
     Gains *getGains() {

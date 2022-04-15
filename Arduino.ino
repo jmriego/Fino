@@ -20,7 +20,6 @@ void ReadPots()
     /*
     pos[0] = map(analogRead(A2), 0, 1023, minX, maxX);
     pos[1] = map(analogRead(A3), 0, 1023, minY, maxY);
-    pos_updated = true;
     */
 }
 
