@@ -2,6 +2,7 @@
 
 #define ROLL_R_EN 8
 #define PITCH_L_EN 16
+#include <EEPROM.h>
 
 void ArduinoSetup()
 {
@@ -11,6 +12,19 @@ void ArduinoSetup()
     pinMode(PITCH_R_EN, OUTPUT);
     pinMode(PITCH_L_EN, OUTPUT);
     */
+    for (int i=0; i<256; i++)
+    {
+        int16_t val;
+        if ( i == 63 )
+          val = 65535;
+        else if ( i == 127 )
+          val = 0;
+        else if ( i == 191 )
+          val = -65535;
+        else
+            val = sin(i * 360.0 / 255.0) * 65535;
+        EEPROM.put(i*2, val);
+    }
 }
 
 void ReadPots()

@@ -22,6 +22,7 @@
 #include "../config.h"
 #include "FFBDescriptor.h"
 #include "filters.h"
+#include "fast_trig.h"
 #ifdef damperSplineGain
 #include "spline.h"
 #endif
@@ -475,7 +476,7 @@ void Joystick_::getForce(int32_t* forces) {
 
 float Joystick_::getAngleRatio(volatile TEffectState& effect, int axis)
 {
-    float angle = (axis < 2 ? effect.direction[0] : effect.direction[1]) * 360.0 / 255.0 * DEG_TO_RAD;
+    float angle = axis < 2 ? effect.direction[0] : effect.direction[1];
     if (axis == 0)
     {
         // angle=0 points "up"
@@ -686,8 +687,9 @@ int32_t Joystick_::SinForceCalculator(volatile TEffectState& effect)
 	float phase = effect.phase;
 	float timeTemp = effect.elapsedTime;
 	float period = effect.period;
-	float angle = ((timeTemp / period) + (phase / 36000.0)) * 2 * PI;
-	float sine = sin(angle);
+	// float angle = ((timeTemp / period) + (phase / 36000.0)) * 2 * PI;
+	uint8_t angle = ((timeTemp / period) + (phase / 36000.0)) * 255;
+	float sine = fast_sin(angle);
 	float tempforce = sine * magnitude;
 	tempforce += offset;
 	return ApplyEnvelope(effect, tempforce);
