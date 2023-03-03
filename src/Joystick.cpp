@@ -797,20 +797,20 @@ float Joystick_::NormalizeRange(int16_t x, int16_t maxValue) {
 
 int16_t  Joystick_::ApplyGain(uint16_t value, uint8_t gain)
 {
-	int16_t value_32 = value;
+	int32_t value_32 = value;
 	return ((value_32 * gain) / 255);
 }
 
 int16_t Joystick_::ApplyEnvelope(volatile TEffectState& effect, int16_t value)
 {
-	int16_t magnitude = ApplyGain(effect.magnitude, effect.gain);
-	int16_t attackLevel = ApplyGain(effect.attackLevel, effect.gain);
-	int16_t fadeLevel = ApplyGain(effect.fadeLevel, effect.gain);
-	int16_t newValue = magnitude;
-	int16_t attackTime = effect.attackTime;
-	int16_t fadeTime = effect.fadeTime;
-	int16_t elapsedTime = effect.elapsedTime;
-	int16_t duration = effect.duration;
+	int32_t magnitude = ApplyGain(effect.magnitude, effect.gain);
+	int32_t attackLevel = ApplyGain(effect.attackLevel, effect.gain);
+	int32_t fadeLevel = ApplyGain(effect.fadeLevel, effect.gain);
+	int32_t newValue = magnitude;
+	int32_t attackTime = effect.attackTime;
+	int32_t fadeTime = effect.fadeTime;
+	int32_t elapsedTime = effect.elapsedTime;
+	int32_t duration = effect.duration;
 
 	if (elapsedTime < attackTime)
 	{
