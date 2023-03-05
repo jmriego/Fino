@@ -882,6 +882,26 @@ void Joystick_::setZAxis(int16_t value)
 	if (_autoSendState) sendState();
 }
 
+void Joystick_::setRxAxis(int16_t value)
+{
+	_xAxisRotation = value;
+	if (_autoSendState) sendState();
+}
+
+
+void Joystick_::setRyAxis(int16_t value)
+{
+	_yAxisRotation = value;
+	if (_autoSendState) sendState();
+}
+
+
+void Joystick_::setRzAxis(int16_t value)
+{
+	_zAxisRotation = value;
+	if (_autoSendState) sendState();
+}
+
 void Joystick_::setRudder(int16_t value)
 {
 	_rudder = value;
