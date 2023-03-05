@@ -39,7 +39,7 @@ int lastAccelX;
 int lastAccelY;
 
 EffectParams effects[2];
-int32_t forces[2] = {0, 0};
+int16_t forces[2] = {0, 0};
 
 Joystick_ Joystick(
     JOYSTICK_DEFAULT_REPORT_ID, JOYSTICK_TYPE_JOYSTICK,
