@@ -101,7 +101,7 @@ private:
 	int16_t	                 _yAxisRotation;
 	int16_t	                 _zAxisRotation;
 	int16_t                  _throttle;
-	int16_t                  _rudder;
+	int16_t                  _dial;
 	int16_t	                 _hatSwitchValues[JOYSTICK_HATSWITCH_COUNT_MAXIMUM];
     uint8_t                 *_buttonValues = NULL;
 
@@ -124,8 +124,8 @@ private:
 	int16_t                  _ryAxisMaximum = JOYSTICK_DEFAULT_AXIS_MAXIMUM;
 	int16_t                  _rzAxisMinimum = JOYSTICK_DEFAULT_AXIS_MINIMUM;
 	int16_t                  _rzAxisMaximum = JOYSTICK_DEFAULT_AXIS_MAXIMUM;
-	int16_t                  _rudderMinimum = JOYSTICK_DEFAULT_SIMULATOR_MINIMUM;
-	int16_t                  _rudderMaximum = JOYSTICK_DEFAULT_SIMULATOR_MAXIMUM;
+	int16_t                  _dialMinimum = JOYSTICK_DEFAULT_SIMULATOR_MINIMUM;
+	int16_t                  _dialMaximum = JOYSTICK_DEFAULT_SIMULATOR_MAXIMUM;
 	int16_t                  _throttleMinimum = JOYSTICK_DEFAULT_SIMULATOR_MINIMUM;
 	int16_t                  _throttleMaximum = JOYSTICK_DEFAULT_SIMULATOR_MAXIMUM;
 
@@ -170,7 +170,7 @@ public:
 		bool includeRxAxis = true,
 		bool includeRyAxis = true,
 		bool includeRzAxis = true,
-		bool includeRudder = true,
+		bool includeDial = true,
 		bool includeThrottle = true);
 
 	void begin(bool initAutoSendState = true);
@@ -206,10 +206,10 @@ public:
 		_rzAxisMinimum = minimum;
 		_rzAxisMaximum = maximum;
 	}
-	inline void setRudderRange(int16_t minimum, int16_t maximum)
+	inline void setDialRange(int16_t minimum, int16_t maximum)
 	{
-		_rudderMinimum = minimum;
-		_rudderMaximum = maximum;
+		_dialMinimum = minimum;
+		_dialMaximum = maximum;
 	}
 	inline void setThrottleRange(int16_t minimum, int16_t maximum)
 	{
@@ -226,7 +226,7 @@ public:
 	void setRzAxis(int16_t value);
 
 	// Set Simuation Values
-	void setRudder(int16_t value);
+	void setDial(int16_t value);
 	void setThrottle(int16_t value);
 
 	void setButton(uint8_t button, uint8_t value);

@@ -40,7 +40,7 @@
 #define JOYSTICK_INCLUDE_RY_AXIS B00010000
 #define JOYSTICK_INCLUDE_RZ_AXIS B00100000
 
-#define JOYSTICK_INCLUDE_RUDDER      B00000001
+#define JOYSTICK_INCLUDE_DIAL      B00000001
 #define JOYSTICK_INCLUDE_THROTTLE    B00000010
 #define JOYSTICK_INCLUDE_ACCELERATOR B00000100
 
@@ -66,7 +66,7 @@ Joystick_::Joystick_(
 	bool includeRxAxis,
 	bool includeRyAxis,
 	bool includeRzAxis,
-	bool includeRudder,
+	bool includeDial,
 	bool includeThrottle)
 {
     // Set the USB HID Report ID
@@ -83,7 +83,7 @@ Joystick_::Joystick_(
 	_includeAxisFlags |= (includeRyAxis ? JOYSTICK_INCLUDE_RY_AXIS : 0);
 	_includeAxisFlags |= (includeRzAxis ? JOYSTICK_INCLUDE_RZ_AXIS : 0);
 	_includeSimulatorFlags = 0;
-	_includeSimulatorFlags |= (includeRudder ? JOYSTICK_INCLUDE_RUDDER : 0);
+	_includeSimulatorFlags |= (includeDial ? JOYSTICK_INCLUDE_DIAL : 0);
 	_includeSimulatorFlags |= (includeThrottle ? JOYSTICK_INCLUDE_THROTTLE : 0);
 	
     // Build Joystick HID Report Description
@@ -104,7 +104,7 @@ Joystick_::Joystick_(
 		+  (includeRyAxis == true)
 		+  (includeRzAxis == true);
 		
-	uint8_t simulationCount = (includeRudder == true)
+	uint8_t simulationCount = (includeDial == true)
 		+ (includeThrottle == true); 
 		
 	static uint8_t tempHidReportDescriptor[150];
@@ -394,8 +394,8 @@ Joystick_::Joystick_(
 		tempHidReportDescriptor[hidReportDescriptorSize++] = 0xA1;
 		tempHidReportDescriptor[hidReportDescriptorSize++] = 0x00;
 
-		if (includeRudder == true) {
-			// USAGE (Rudder)
+		if (includeDial == true) {
+			// USAGE (Dial)
 			tempHidReportDescriptor[hidReportDescriptorSize++] = 0x09;
 			tempHidReportDescriptor[hidReportDescriptorSize++] = 0xBA;
 		}
@@ -445,7 +445,7 @@ Joystick_::Joystick_(
 	_yAxisRotation = 0;
 	_zAxisRotation = 0;
 	_throttle = 0;
-	_rudder = 0;
+	_dial = 0;
 	for (int index = 0; index < JOYSTICK_HATSWITCH_COUNT_MAXIMUM; index++)
 	{
 		_hatSwitchValues[index] = JOYSTICK_HATSWITCH_RELEASE;
@@ -902,9 +902,9 @@ void Joystick_::setRzAxis(int16_t value)
 	if (_autoSendState) sendState();
 }
 
-void Joystick_::setRudder(int16_t value)
+void Joystick_::setDial(int16_t value)
 {
-	_rudder = value;
+	_dial = value;
 	if (_autoSendState) sendState();
 }
 void Joystick_::setThrottle(int16_t value)
@@ -1006,7 +1006,7 @@ void Joystick_::sendState()
 	index += buildAndSetAxisValue(_includeAxisFlags & JOYSTICK_INCLUDE_RZ_AXIS, _zAxisRotation, _rzAxisMinimum, _rzAxisMaximum, &(data[index]));
 	
 	// Set Simulation Values
-	index += buildAndSetSimulationValue(_includeSimulatorFlags & JOYSTICK_INCLUDE_RUDDER, _rudder, _rudderMinimum, _rudderMaximum, &(data[index]));
+	index += buildAndSetSimulationValue(_includeSimulatorFlags & JOYSTICK_INCLUDE_DIAL, _dial, _dial, _dial, &(data[index]));
 	index += buildAndSetSimulationValue(_includeSimulatorFlags & JOYSTICK_INCLUDE_THROTTLE, _throttle, _throttleMinimum, _throttleMaximum, &(data[index]));
 
 	DynamicHID().SendReport(_hidReportId, data, _hidReportSize);
