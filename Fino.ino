@@ -46,7 +46,7 @@ Joystick_ Joystick(
     19, 2, // Button Count, Hat Switch Count
     true, true, false, // X, Y, Z
     false, false, false, // Rx, Ry, Rz
-    true, true); // dial, throttle
+    true, true); // slider, dial
 
 void setup() {
 
