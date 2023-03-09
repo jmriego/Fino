@@ -100,7 +100,7 @@ private:
 	int16_t	                 _xAxisRotation;
 	int16_t	                 _yAxisRotation;
 	int16_t	                 _zAxisRotation;
-	int16_t                  _throttle;
+	int16_t                  _slider;
 	int16_t                  _dial;
 	int16_t	                 _hatSwitchValues[JOYSTICK_HATSWITCH_COUNT_MAXIMUM];
     uint8_t                 *_buttonValues = NULL;
@@ -124,10 +124,11 @@ private:
 	int16_t                  _ryAxisMaximum = JOYSTICK_DEFAULT_AXIS_MAXIMUM;
 	int16_t                  _rzAxisMinimum = JOYSTICK_DEFAULT_AXIS_MINIMUM;
 	int16_t                  _rzAxisMaximum = JOYSTICK_DEFAULT_AXIS_MAXIMUM;
-	int16_t                  _dialMinimum = JOYSTICK_DEFAULT_SIMULATOR_MINIMUM;
-	int16_t                  _dialMaximum = JOYSTICK_DEFAULT_SIMULATOR_MAXIMUM;
-	int16_t                  _throttleMinimum = JOYSTICK_DEFAULT_SIMULATOR_MINIMUM;
-	int16_t                  _throttleMaximum = JOYSTICK_DEFAULT_SIMULATOR_MAXIMUM;
+	int16_t                  _sliderMinimum = JOYSTICK_DEFAULT_AXIS_MINIMUM;
+	int16_t                  _sliderMaximum = JOYSTICK_DEFAULT_AXIS_MAXIMUM;
+	int16_t                  _dialMinimum = JOYSTICK_DEFAULT_AXIS_MINIMUM;
+	int16_t                  _dialMaximum = JOYSTICK_DEFAULT_AXIS_MAXIMUM;
+
 
 	uint8_t                  _hidReportId;
 	uint8_t                  _hidReportSize; 
@@ -170,8 +171,8 @@ public:
 		bool includeRxAxis = true,
 		bool includeRyAxis = true,
 		bool includeRzAxis = true,
-		bool includeDial = true,
-		bool includeThrottle = true);
+		bool includeSlider = false,
+		bool includeDial = false);
 
 	void begin(bool initAutoSendState = true);
 	void end();
@@ -206,16 +207,17 @@ public:
 		_rzAxisMinimum = minimum;
 		_rzAxisMaximum = maximum;
 	}
+	inline void setSliderRange(int16_t minimum, int16_t maximum)
+	{
+		_sliderMinimum = minimum;
+		_sliderMaximum = maximum;
+	}	
 	inline void setDialRange(int16_t minimum, int16_t maximum)
 	{
 		_dialMinimum = minimum;
 		_dialMaximum = maximum;
 	}
-	inline void setThrottleRange(int16_t minimum, int16_t maximum)
-	{
-		_throttleMinimum = minimum;
-		_throttleMaximum = maximum;
-	}
+	
 
 	// Set Axis Values
 	void setXAxis(int16_t value);
@@ -224,10 +226,8 @@ public:
 	void setRxAxis(int16_t value);
 	void setRyAxis(int16_t value);
 	void setRzAxis(int16_t value);
-
-	// Set Simuation Values
+	void setSlider(int16_t value);
 	void setDial(int16_t value);
-	void setThrottle(int16_t value);
 
 	void setButton(uint8_t button, uint8_t value);
 	void pressButton(uint8_t button);
