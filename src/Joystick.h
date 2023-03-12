@@ -102,6 +102,9 @@ private:
 	int16_t	                 _zAxisRotation;
 	int16_t                  _throttle;
 	int16_t                  _rudder;
+    int16_t                  _accelerator;
+    int16_t                  _brake;
+    int16_t                  _steering;
 	int16_t	                 _hatSwitchValues[JOYSTICK_HATSWITCH_COUNT_MAXIMUM];
     uint8_t                 *_buttonValues = NULL;
 
@@ -128,6 +131,12 @@ private:
 	int16_t                  _rudderMaximum = JOYSTICK_DEFAULT_SIMULATOR_MAXIMUM;
 	int16_t                  _throttleMinimum = JOYSTICK_DEFAULT_SIMULATOR_MINIMUM;
 	int16_t                  _throttleMaximum = JOYSTICK_DEFAULT_SIMULATOR_MAXIMUM;
+    int16_t                  _acceleratorMinimum = JOYSTICK_DEFAULT_SIMULATOR_MINIMUM;
+    int16_t                  _acceleratorMaximum = JOYSTICK_DEFAULT_SIMULATOR_MAXIMUM;
+    int16_t                  _brakeMinimum = JOYSTICK_DEFAULT_SIMULATOR_MINIMUM;
+    int16_t                  _brakeMaximum = JOYSTICK_DEFAULT_SIMULATOR_MAXIMUM;
+    int16_t                  _steeringMinimum = JOYSTICK_DEFAULT_SIMULATOR_MINIMUM;
+    int16_t                  _steeringMaximum = JOYSTICK_DEFAULT_SIMULATOR_MAXIMUM;
 
 	uint8_t                  _hidReportId;
 	uint8_t                  _hidReportSize; 
@@ -171,7 +180,10 @@ public:
 		bool includeRyAxis = true,
 		bool includeRzAxis = true,
 		bool includeRudder = true,
-		bool includeThrottle = true);
+        bool includeThrottle = true,
+        bool includeAccelerator = true,
+        bool includeBrake = true,
+        bool includeSteering = true);
 
 	void begin(bool initAutoSendState = true);
 	void end();
@@ -216,6 +228,21 @@ public:
 		_throttleMinimum = minimum;
 		_throttleMaximum = maximum;
 	}
+    inline void setAcceleratorRange(int16_t minimum, int16_t maximum)
+    {
+     _acceleratorMinimum = minimum;
+     _acceleratorMaximum = maximum;
+    }
+    inline void setBrakeRange(int16_t minimum, int16_t maximum)
+    {
+     _brakeMinimum = minimum;
+     _brakeMaximum = maximum;
+    }
+    inline void setSteeringRange(int16_t minimum, int16_t maximum)
+    {
+     _steeringMinimum = minimum;
+     _steeringMaximum = maximum;
+    }
 
 	// Set Axis Values
 	void setXAxis(int16_t value);
@@ -228,6 +255,9 @@ public:
 	// Set Simuation Values
 	void setRudder(int16_t value);
 	void setThrottle(int16_t value);
+    void setAccelerator(int16_t value);
+    void setBrake(int16_t value);
+    void setSteering(int16_t value);
 
 	void setButton(uint8_t button, uint8_t value);
 	void pressButton(uint8_t button);
