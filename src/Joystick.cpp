@@ -39,10 +39,8 @@
 #define JOYSTICK_INCLUDE_RX_AXIS B00001000
 #define JOYSTICK_INCLUDE_RY_AXIS B00010000
 #define JOYSTICK_INCLUDE_RZ_AXIS B00100000
-
-#define JOYSTICK_INCLUDE_RUDDER      B00000001
-#define JOYSTICK_INCLUDE_THROTTLE    B00000010
-#define JOYSTICK_INCLUDE_ACCELERATOR B00000100
+#define JOYSTICK_INCLUDE_SLIDER  B01000000
+#define JOYSTICK_INCLUDE_DIAL    B10000000
 
 const float cutoff_freq_damper   = 2.0;  //Cutoff frequency in Hz
 const float sampling_time_damper = 0.002; //Sampling time in seconds.
@@ -66,8 +64,8 @@ Joystick_::Joystick_(
 	bool includeRxAxis,
 	bool includeRyAxis,
 	bool includeRzAxis,
-	bool includeRudder,
-	bool includeThrottle)
+	bool includeSlider,
+	bool includeDial)
 {
     // Set the USB HID Report ID
     _hidReportId = hidReportId;
@@ -82,9 +80,9 @@ Joystick_::Joystick_(
 	_includeAxisFlags |= (includeRxAxis ? JOYSTICK_INCLUDE_RX_AXIS : 0);
 	_includeAxisFlags |= (includeRyAxis ? JOYSTICK_INCLUDE_RY_AXIS : 0);
 	_includeAxisFlags |= (includeRzAxis ? JOYSTICK_INCLUDE_RZ_AXIS : 0);
-	_includeSimulatorFlags = 0;
-	_includeSimulatorFlags |= (includeRudder ? JOYSTICK_INCLUDE_RUDDER : 0);
-	_includeSimulatorFlags |= (includeThrottle ? JOYSTICK_INCLUDE_THROTTLE : 0);
+	_includeAxisFlags |= (includeSlider ? JOYSTICK_INCLUDE_SLIDER : 0);
+	_includeAxisFlags |= (includeDial ? JOYSTICK_INCLUDE_DIAL : 0);
+
 	
     // Build Joystick HID Report Description
 	
@@ -102,10 +100,9 @@ Joystick_::Joystick_(
 		+  (includeZAxis == true)
 		+  (includeRxAxis == true)
 		+  (includeRyAxis == true)
-		+  (includeRzAxis == true);
-		
-	uint8_t simulationCount = (includeRudder == true)
-		+ (includeThrottle == true); 
+		+  (includeRzAxis == true)
+		+  (includeSlider == true)
+		+  (includeDial == true);
 		
 	static uint8_t tempHidReportDescriptor[150];
 	int hidReportDescriptorSize = 0;
@@ -357,6 +354,18 @@ Joystick_::Joystick_(
 			tempHidReportDescriptor[hidReportDescriptorSize++] = 0x35;
 		}
 		
+		if (includeSlider == true) {
+			// USAGE (Rz)
+			tempHidReportDescriptor[hidReportDescriptorSize++] = 0x09;
+			tempHidReportDescriptor[hidReportDescriptorSize++] = 0x36;
+		}		
+	
+		if (includeDial == true) {
+			// USAGE (Rz)
+			tempHidReportDescriptor[hidReportDescriptorSize++] = 0x09;
+			tempHidReportDescriptor[hidReportDescriptorSize++] = 0x37;
+		}
+		
 		// INPUT (Data,Var,Abs)
 		tempHidReportDescriptor[hidReportDescriptorSize++] = 0x81;
 		tempHidReportDescriptor[hidReportDescriptorSize++] = 0x02;
@@ -365,54 +374,6 @@ Joystick_::Joystick_(
 		tempHidReportDescriptor[hidReportDescriptorSize++] = 0xc0;
 		
 	} // X, Y, Z, Rx, Ry, and Rz Axis	
-	
-	if (simulationCount > 0) {
-	
-		// USAGE_PAGE (Simulation Controls)
-		tempHidReportDescriptor[hidReportDescriptorSize++] = 0x05;
-		tempHidReportDescriptor[hidReportDescriptorSize++] = 0x02;
-		
-		// LOGICAL_MINIMUM (-32767)
-		tempHidReportDescriptor[hidReportDescriptorSize++] = 0x16;
-		tempHidReportDescriptor[hidReportDescriptorSize++] = 0x01;
-		tempHidReportDescriptor[hidReportDescriptorSize++] = 0x80;
-
-		// LOGICAL_MAXIMUM (+32767)
-		tempHidReportDescriptor[hidReportDescriptorSize++] = 0x26;
-		tempHidReportDescriptor[hidReportDescriptorSize++] = 0xFF;
-		tempHidReportDescriptor[hidReportDescriptorSize++] = 0x7F;
-
-		// REPORT_SIZE (16)
-		tempHidReportDescriptor[hidReportDescriptorSize++] = 0x75;
-		tempHidReportDescriptor[hidReportDescriptorSize++] = 0x10;
-
-		// REPORT_COUNT (simulationCount)
-		tempHidReportDescriptor[hidReportDescriptorSize++] = 0x95;
-		tempHidReportDescriptor[hidReportDescriptorSize++] = simulationCount;
-
-		// COLLECTION (Physical)
-		tempHidReportDescriptor[hidReportDescriptorSize++] = 0xA1;
-		tempHidReportDescriptor[hidReportDescriptorSize++] = 0x00;
-
-		if (includeRudder == true) {
-			// USAGE (Rudder)
-			tempHidReportDescriptor[hidReportDescriptorSize++] = 0x09;
-			tempHidReportDescriptor[hidReportDescriptorSize++] = 0xBA;
-		}
-
-		if (includeThrottle == true) {
-			// USAGE (Throttle)
-			tempHidReportDescriptor[hidReportDescriptorSize++] = 0x09;
-			tempHidReportDescriptor[hidReportDescriptorSize++] = 0xBB;
-		}
-
-		// INPUT (Data,Var,Abs)
-		tempHidReportDescriptor[hidReportDescriptorSize++] = 0x81;
-		tempHidReportDescriptor[hidReportDescriptorSize++] = 0x02;
-		
-		// END_COLLECTION (Physical) 
-		tempHidReportDescriptor[hidReportDescriptorSize++] = 0xc0;
-	} // Simulation Controls
 
 	// Create a copy of the HID Report Descriptor template that is just the right size
 	uint8_t *customHidReportDescriptor = new uint8_t[hidReportDescriptorSize];
@@ -435,7 +396,6 @@ Joystick_::Joystick_(
 	_hidReportSize = _buttonValuesArraySize;
 	_hidReportSize += (_hatSwitchCount > 0);
 	_hidReportSize += (axisCount * 2);
-	_hidReportSize += (simulationCount * 2);
 	
 	// Initalize Joystick State
 	_xAxis = 0;
@@ -444,8 +404,9 @@ Joystick_::Joystick_(
 	_xAxisRotation = 0;
 	_yAxisRotation = 0;
 	_zAxisRotation = 0;
-	_throttle = 0;
-	_rudder = 0;
+	_slider = 0;
+	_dial = 0;
+	
 	for (int index = 0; index < JOYSTICK_HATSWITCH_COUNT_MAXIMUM; index++)
 	{
 		_hatSwitchValues[index] = JOYSTICK_HATSWITCH_RELEASE;
@@ -901,15 +862,14 @@ void Joystick_::setRzAxis(int16_t value)
 	_zAxisRotation = value;
 	if (_autoSendState) sendState();
 }
-
-void Joystick_::setRudder(int16_t value)
+void Joystick_::setSlider(int16_t value)
 {
-	_rudder = value;
+	_slider = value;
 	if (_autoSendState) sendState();
 }
-void Joystick_::setThrottle(int16_t value)
+void Joystick_::setDial(int16_t value)
 {
-	_throttle = value;
+	_dial = value;
 	if (_autoSendState) sendState();
 }
 
@@ -1004,11 +964,9 @@ void Joystick_::sendState()
 	index += buildAndSetAxisValue(_includeAxisFlags & JOYSTICK_INCLUDE_RX_AXIS, _xAxisRotation, _rxAxisMinimum, _rxAxisMaximum, &(data[index]));
 	index += buildAndSetAxisValue(_includeAxisFlags & JOYSTICK_INCLUDE_RY_AXIS, _yAxisRotation, _ryAxisMinimum, _ryAxisMaximum, &(data[index]));
 	index += buildAndSetAxisValue(_includeAxisFlags & JOYSTICK_INCLUDE_RZ_AXIS, _zAxisRotation, _rzAxisMinimum, _rzAxisMaximum, &(data[index]));
+	index += buildAndSetAxisValue(_includeAxisFlags & JOYSTICK_INCLUDE_SLIDER, _slider, _sliderMinimum, _sliderMaximum, &(data[index]));
+	index += buildAndSetAxisValue(_includeAxisFlags & JOYSTICK_INCLUDE_DIAL, _dial, _dialMinimum, _dialMaximum, &(data[index]));
 	
-	// Set Simulation Values
-	index += buildAndSetSimulationValue(_includeSimulatorFlags & JOYSTICK_INCLUDE_RUDDER, _rudder, _rudderMinimum, _rudderMaximum, &(data[index]));
-	index += buildAndSetSimulationValue(_includeSimulatorFlags & JOYSTICK_INCLUDE_THROTTLE, _throttle, _throttleMinimum, _throttleMaximum, &(data[index]));
-
 	DynamicHID().SendReport(_hidReportId, data, _hidReportSize);
 }
 
