@@ -103,17 +103,17 @@ Joystick_::Joystick_(
 	
 	// Axis Calculations
 	uint8_t axisCount = (includeXAxis == true)
-		+  (includeYAxis == true)
-		+  (includeZAxis == true)
+		+  (includeYAxis  == true)
+		+  (includeZAxis  == true)
 		+  (includeRxAxis == true)
 		+  (includeRyAxis == true)
 		+  (includeRzAxis == true)
 		+  (includeSlider == true)
-		+  (includeDial == true);
+		+  (includeDial   == true);
 		
 	// Calculate HID Report Size
-	_hidReportSize = _buttonValuesArraySize;
-	_hidReportSize += (_hatSwitchCount > 0);
+	_hidReportSize  = _buttonValuesArraySize;
+	_hidReportSize += (_hatSwitchCount + 1) >> 1;
 	_hidReportSize += (axisCount * 2);
 
     hidReportDescriptorSize = 0;
@@ -125,7 +125,8 @@ Joystick_::Joystick_(
     db(0x09, 0x01);                 //   USAGE (Pointer)
     db(0x85, 0x01);                 //   REPORT_ID (Default: 1)
 
-	if (_buttonCount > 0) {
+	if (_buttonCount > 0)
+  {
     db(0x05, 0x09);                 //   USAGE_PAGE (Button)
     db(0x19, 0x01);                 //     USAGE_MINIMUM (Button 1)
     db(0x29, _buttonCount);         //     USAGE_MAXIMUM (Button _buttonCount)            
@@ -137,8 +138,9 @@ Joystick_::Joystick_(
     db(0x65, 0x00);                 //     UNIT (None)
     db(0x81, 0x02);                 //   INPUT (Data,Var,Abs)
 
-		if (buttonPaddingBits > 0) {    // Padding Bits Needed
-		  db(0x75, 0x01);               //   REPORT_SIZE (1)
+		if (buttonPaddingBits > 0)      // Padding Bits Needed
+    {
+      db(0x75, 0x01);               //   REPORT_SIZE (1)
       db(0x95, buttonPaddingBits);  //   REPORT_COUNT (# of padding bits)
       db(0x81, 0x03);               //   INPUT (Const,Var,Abs)
 		}
@@ -148,18 +150,10 @@ Joystick_::Joystick_(
     db(0x05, 0x01);                 //   USAGE_PAGE (Generic Desktop)
 	}
 
-	if (_hatSwitchCount > 0) {
-    db(0x09, 0x39);                 //   USAGE (Hat Switch)
-    db(0x15, 0x00);                 //     LOGICAL_MINIMUM (0)
-    db(0x25, 0x07);                 //     LOGICAL_MAXIMUM (7)
-    db(0x35, 0x00);                 //     PHYSICAL_MINIMUM (0)
-    db(0x46, 0x3B, 0x01);           //     PHYSICAL_MAXIMUM (315)
-    db(0x65, 0x14);                 //     UNIT (Eng Rot:Angular Pos)
-    db(0x75, 0x04);                 //     REPORT_SIZE (4)
-    db(0x95, 0x01);                 //     REPORT_COUNT (1)
-    db(0x81, 0x02);                 //   INPUT (Data,Var,Abs)
-		
-		if (_hatSwitchCount > 1) {  
+	if (_hatSwitchCount > 0)
+  {
+    for (int index = 0; index < _hatSwitchCount; index++)
+    {
       db(0x09, 0x39);               //   USAGE (Hat Switch)
       db(0x15, 0x00);               //     LOGICAL_MINIMUM (0)
       db(0x25, 0x07);               //     LOGICAL_MAXIMUM (7)
@@ -169,15 +163,17 @@ Joystick_::Joystick_(
       db(0x75, 0x04);               //     REPORT_SIZE (4)
       db(0x95, 0x01);               //     REPORT_COUNT (1)
       db(0x81, 0x02);               //   INPUT (Data,Var,Abs)
-
-    } else {                        // Use Padding Bits
+    }
+    if (_hatSwitchCount & 1)        // 4 Padding Bits needed
+    {
       db(0x75, 0x01);               //   REPORT_SIZE (1)
-      db(0x95, 0x04);               //   REPORT_COUNT (4)
+      db(0x95, 0x04);               //   REPORT_COUNT (4 padding bits)
       db(0x81, 0x03);               //   INPUT (Const,Var,Abs)
-		} // One or Two Hat Switches?
+    }
 	} // Hat Switches
 
-	if (axisCount > 0) {
+	if (axisCount > 0)
+  {
     db(0x09, 0x01);                 //   USAGE (Pointer)
     db(0x16, 0x01, 0x80);           //     LOGICAL_MINIMUM (-32767)
     db(0x26, 0xFF, 0x7F);           //     LOGICAL_MAXIMUM (+32767)
@@ -185,18 +181,18 @@ Joystick_::Joystick_(
     db(0x95, axisCount);            //     REPORT_COUNT (axisCount)
     db(0xA1, 0x00);                 //     COLLECTION (Physical)
 
-		if (includeXAxis  == true) db(0x09, 0x30); //     USAGE (X)
-		if (includeYAxis  == true) db(0x09, 0x31); //     USAGE (Y)
-		if (includeZAxis  == true) db(0x09, 0x32); //     USAGE (Z)
-		if (includeRxAxis == true) db(0x09, 0x33); //     USAGE (Rx)
-		if (includeRyAxis == true) db(0x09, 0x34); //     USAGE (Ry)
-		if (includeRzAxis == true) db(0x09, 0x35); //     USAGE (Rz)
-		if (includeSlider == true) db(0x09, 0x36); //     USAGE (Slider)
-		if (includeDial   == true) db(0x09, 0x37); //     USAGE (Dial)
+		if (includeXAxis)  db(0x09, 0x30); //     USAGE (X)
+		if (includeYAxis)  db(0x09, 0x31); //     USAGE (Y)
+		if (includeZAxis)  db(0x09, 0x32); //     USAGE (Z)
+		if (includeRxAxis) db(0x09, 0x33); //     USAGE (Rx)
+		if (includeRyAxis) db(0x09, 0x34); //     USAGE (Ry)
+		if (includeRzAxis) db(0x09, 0x35); //     USAGE (Rz)
+		if (includeSlider) db(0x09, 0x36); //     USAGE (Slider)
+		if (includeDial)   db(0x09, 0x37); //     USAGE (Dial)
 
     db(0x81, 0x02);                 //   INPUT (Data,Var,Abs)
     db(0xc0);                       //   END_COLLECTION (Physical)
-	} // X, Y, Z, Rx, Ry, and Rz Axis	
+	} // X, Y, Z, Rx, Ry, Rz, Slider, Dial Axis
 
 	// Create a copy of the HID Report Descriptor template that is just the right size
 	uint8_t *customHidReportDescriptor = new uint8_t[hidReportDescriptorSize];
@@ -746,24 +742,19 @@ void Joystick_::sendState()
 
 	// Set Hat Switch Values
 	if (_hatSwitchCount > 0) {
-		
 		// Calculate hat-switch values
-		uint8_t convertedHatSwitch[JOYSTICK_HATSWITCH_COUNT_MAXIMUM];
-		for (int hatSwitchIndex = 0; hatSwitchIndex < JOYSTICK_HATSWITCH_COUNT_MAXIMUM; hatSwitchIndex++)
+		uint8_t convertedHatSwitch;
+		for (int hatSwitchIndex = 0; hatSwitchIndex < _hatSwitchCount; hatSwitchIndex++)
 		{
-			if (_hatSwitchValues[hatSwitchIndex] < 0)
-			{
-				convertedHatSwitch[hatSwitchIndex] = 8;
-			}
-			else
-			{
-				convertedHatSwitch[hatSwitchIndex] = (_hatSwitchValues[hatSwitchIndex] % 360) / 45;
-			}			
-		}
-
-		// Pack hat-switch states into a single byte
-		data[index++] = (convertedHatSwitch[1] << 4) | (B00001111 & convertedHatSwitch[0]);
-	
+			if (_hatSwitchValues[hatSwitchIndex] < 0) 
+           convertedHatSwitch = 8;
+			else convertedHatSwitch = (_hatSwitchValues[hatSwitchIndex] % 360) / 45;
+      
+      // Pack hat-switch states into a single byte
+      if (hatSwitchIndex & 1) data[index++] |= (convertedHatSwitch << 4);
+                         else data[index]    = (B00001111 & convertedHatSwitch);
+    }
+    if (_hatSwitchCount & 1) index++;
 	} // Hat Switches
 
 	// Set Axis Values
