@@ -49,14 +49,15 @@
 #define JOYSTICK_DEFAULT_SIMULATOR_MINIMUM    0
 #define JOYSTICK_DEFAULT_SIMULATOR_MAXIMUM 1023
 #define JOYSTICK_DEFAULT_HATSWITCH_COUNT      2
-#define JOYSTICK_HATSWITCH_COUNT_MAXIMUM      2
+#define JOYSTICK_HATSWITCH_COUNT_MAXIMUM      4
 #define JOYSTICK_HATSWITCH_RELEASE           -1
 #define JOYSTICK_TYPE_JOYSTICK             0x04
 #define JOYSTICK_TYPE_GAMEPAD              0x05
 #define JOYSTICK_TYPE_MULTI_AXIS           0x08
 
 #define FORCE_FEEDBACK_MAXGAIN              1.0
-#define DEG_TO_RAD              ((float)((float)3.14159265359 / 180.0))
+//#define DEG_TO_RAD              ((float)((float)3.14159265359 / 180.0))
+#define HID_DESCRIPTOR_MAXLENGTH            147
 
 struct Gains{
     float totalGain         = FORCE_FEEDBACK_MAXGAIN;
@@ -132,6 +133,13 @@ private:
 
 	uint8_t                  _hidReportId;
 	uint8_t                  _hidReportSize; 
+
+  uint8_t *tempHidReportDescriptor;
+  int hidReportDescriptorSize;
+
+  void db(uint8_t a);
+  void db(uint8_t a, uint8_t b);
+  void db(uint8_t a, uint8_t b, uint8_t c);
 
 	//force feedback gain
 	Gains m_gains[FFB_AXIS_COUNT];
