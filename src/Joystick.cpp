@@ -113,8 +113,8 @@ Joystick_::Joystick_(
 		+  (includeSlider == true)
 		+  (includeDial == true);
 		
-	static uint8_t tempHidReportDescriptor[HID_DESCRIPTOR_MAXLENGTH];
-	int hidReportDescriptorSize = 0;
+	hidReportDescriptorSize = 0;
+    tempHidReportDescriptor = new uint8_t[HID_DESCRIPTOR_MAXLENGTH];
     
     db(0x05, 0x01);                 // USAGE_PAGE (Generic Desktop)
     db(0x09, joystickType);         // USAGE (Joystick - 0x04; Gamepad - 0x05; Multi-axis Controller - 0x08)
