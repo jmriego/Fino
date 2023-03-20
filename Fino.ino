@@ -30,7 +30,8 @@ bool is_connected = false;
 bool forces_requested = false;
 bool pos_updated = false;
 
-int16_t pos[2] = {0, 0};
+int16_t pos[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+int16_t hat[4] = {0, 0, 0, 0};
 int lastX;
 int lastY;
 int lastVelX;
@@ -45,7 +46,7 @@ Joystick_ Joystick(
     JOYSTICK_DEFAULT_REPORT_ID, JOYSTICK_TYPE_JOYSTICK,
     19, 2, // Button Count, Hat Switch Count
     true, true, false, // X, Y, Z
-    false, false, false, // Rx, Ry, Rz
+    true, true, true, // Rx, Ry, Rz
     true, true); // slider, dial
 
 void setup() {

@@ -36,10 +36,12 @@ void get_messages_from_serial()
       {
         case POSITION:
         {
-          int16_t x = read_i16();
-          int16_t y = read_i16();
-          pos[0] = x;
-          pos[1] = y;
+          for (int i=0; i<=8; i++) {
+              pos[i] = read_i16();
+          }
+          for (int i=0; i<=4; i++) {
+              hat[i] = read_i16();
+          }
           pos_updated = true;
           break;
         }

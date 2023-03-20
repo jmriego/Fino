@@ -56,8 +56,7 @@
 #define JOYSTICK_TYPE_MULTI_AXIS           0x08
 
 #define FORCE_FEEDBACK_MAXGAIN              1.0
-//#define DEG_TO_RAD              ((float)((float)3.14159265359 / 180.0))
-#define HID_DESCRIPTOR_MAXLENGTH            147
+#define HID_DESCRIPTOR_MAXLENGTH            150
 
 struct Gains{
     float totalGain         = FORCE_FEEDBACK_MAXGAIN;
@@ -138,8 +137,8 @@ private:
   int hidReportDescriptorSize;
 
   void db(uint8_t a);
-  void db(uint8_t a, uint8_t b);
-  void db(uint8_t a, uint8_t b, uint8_t c);
+  template<typename... Args>
+  void Joystick_::db(uint8_t a, Args... args);
 
 	//force feedback gain
 	Gains m_gains[FFB_AXIS_COUNT];

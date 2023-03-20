@@ -55,8 +55,12 @@ damperSplineGain;
 void Joystick_::db(uint8_t a) {
   tempHidReportDescriptor[hidReportDescriptorSize++] = a;
 }
-void Joystick_::db(uint8_t a, uint8_t b)            { db(a); db(b); }
-void Joystick_::db(uint8_t a, uint8_t b, uint8_t c) { db(a); db(b); db(c); }
+
+template<typename... Args>
+void Joystick_::db(uint8_t a, Args... args) {
+  tempHidReportDescriptor[hidReportDescriptorSize++] = a;
+  db(args...);
+}
 
 Joystick_::Joystick_(
 	uint8_t hidReportId,
@@ -94,30 +98,23 @@ Joystick_::Joystick_(
 	// Button Calculations
 	uint8_t buttonsInLastByte = _buttonCount % 8;
 	uint8_t buttonPaddingBits = 0;
-	if (buttonsInLastByte > 0) buttonPaddingBits = 8 - buttonsInLastByte;
-	if (buttonCount > 0) {
-		_buttonValuesArraySize = _buttonCount / 8;
-		if (buttonsInLastByte > 0) _buttonValuesArraySize++;
-		_buttonValues = new uint8_t[_buttonValuesArraySize];
+	if (buttonsInLastByte > 0)
+	{
+		buttonPaddingBits = 8 - buttonsInLastByte;
 	}
 	
 	// Axis Calculations
 	uint8_t axisCount = (includeXAxis == true)
-		+  (includeYAxis  == true)
-		+  (includeZAxis  == true)
+		+  (includeYAxis == true)
+		+  (includeZAxis == true)
 		+  (includeRxAxis == true)
 		+  (includeRyAxis == true)
 		+  (includeRzAxis == true)
 		+  (includeSlider == true)
-		+  (includeDial   == true);
+		+  (includeDial == true);
 		
-	// Calculate HID Report Size
-	_hidReportSize  = _buttonValuesArraySize;
-	_hidReportSize += (_hatSwitchCount + 1) >> 1;
-	_hidReportSize += (axisCount * 2);
-
-    hidReportDescriptorSize = 0;
-    tempHidReportDescriptor = new uint8_t[HID_DESCRIPTOR_MAXLENGTH];
+	static uint8_t tempHidReportDescriptor[HID_DESCRIPTOR_MAXLENGTH];
+	int hidReportDescriptorSize = 0;
     
     db(0x05, 0x01);                 // USAGE_PAGE (Generic Desktop)
     db(0x09, joystickType);         // USAGE (Joystick - 0x04; Gamepad - 0x05; Multi-axis Controller - 0x08)
@@ -125,73 +122,73 @@ Joystick_::Joystick_(
     db(0x09, 0x01);                 //   USAGE (Pointer)
     db(0x85, 0x01);                 //   REPORT_ID (Default: 1)
 
-	if (_buttonCount > 0)
-  {
-    db(0x05, 0x09);                 //   USAGE_PAGE (Button)
-    db(0x19, 0x01);                 //     USAGE_MINIMUM (Button 1)
-    db(0x29, _buttonCount);         //     USAGE_MAXIMUM (Button _buttonCount)            
-    db(0x15, 0x00);                 //     LOGICAL_MINIMUM (0)
-    db(0x25, 0x01);                 //     LOGICAL_MAXIMUM (1)
-    db(0x75, 0x01);                 //     REPORT_SIZE (1)
-    db(0x95, _buttonCount);         //     REPORT_COUNT (# of buttons)
-    db(0x55, 0x00);                 //     UNIT_EXPONENT (0)
-    db(0x65, 0x00);                 //     UNIT (None)
-    db(0x81, 0x02);                 //   INPUT (Data,Var,Abs)
+	if (_buttonCount > 0) {
+        db(0x05, 0x09);                 //   USAGE_PAGE (Button)
+        db(0x19, 0x01);                 //     USAGE_MINIMUM (Button 1)
+        db(0x29, _buttonCount);         //     USAGE_MAXIMUM (Button _buttonCount)            
+        db(0x15, 0x00);                 //     LOGICAL_MINIMUM (0)
+        db(0x25, 0x01);                 //     LOGICAL_MAXIMUM (1)
+        db(0x75, 0x01);                 //     REPORT_SIZE (1)
+        db(0x95, _buttonCount);         //     REPORT_COUNT (# of buttons)
+        db(0x55, 0x00);                 //     UNIT_EXPONENT (0)
+        db(0x65, 0x00);                 //     UNIT (None)
+        db(0x81, 0x02);                 //   INPUT (Data,Var,Abs)
 
-		if (buttonPaddingBits > 0)      // Padding Bits Needed
-    {
-      db(0x75, 0x01);               //   REPORT_SIZE (1)
-      db(0x95, buttonPaddingBits);  //   REPORT_COUNT (# of padding bits)
-      db(0x81, 0x03);               //   INPUT (Const,Var,Abs)
+
+        // Padding Bits Needed
+		if (buttonPaddingBits > 0) {
+            db(0x75, 0x01);               //   REPORT_SIZE (1)
+            db(0x95, buttonPaddingBits);  //   REPORT_COUNT (# of padding bits)
+            db(0x81, 0x03);               //   INPUT (Const,Var,Abs)
 		}
 	} // Buttons
 
 	if ((axisCount > 0) || (_hatSwitchCount > 0)) {
-    db(0x05, 0x01);                 //   USAGE_PAGE (Generic Desktop)
+        db(0x05, 0x01);                 //   USAGE_PAGE (Generic Desktop)
 	}
 
-	if (_hatSwitchCount > 0)
-  {
-    for (int index = 0; index < _hatSwitchCount; index++)
-    {
-      db(0x09, 0x39);               //   USAGE (Hat Switch)
-      db(0x15, 0x00);               //     LOGICAL_MINIMUM (0)
-      db(0x25, 0x07);               //     LOGICAL_MAXIMUM (7)
-      db(0x35, 0x00);               //     PHYSICAL_MINIMUM (0)
-      db(0x46, 0x3B, 0x01);         //     PHYSICAL_MAXIMUM (315)
-      db(0x65, 0x14);               //     UNIT (Eng Rot:Angular Pos)
-      db(0x75, 0x04);               //     REPORT_SIZE (4)
-      db(0x95, 0x01);               //     REPORT_COUNT (1)
-      db(0x81, 0x02);               //   INPUT (Data,Var,Abs)
-    }
-    if (_hatSwitchCount & 1)        // 4 Padding Bits needed
-    {
-      db(0x75, 0x01);               //   REPORT_SIZE (1)
-      db(0x95, 0x04);               //   REPORT_COUNT (4 padding bits)
-      db(0x81, 0x03);               //   INPUT (Const,Var,Abs)
-    }
+	if (_hatSwitchCount > 0) {
+
+        for (int index = 0; index < _hatSwitchCount; index++)
+        {
+            db(0x09, 0x39);               //   USAGE (Hat Switch)
+            db(0x15, 0x00);               //     LOGICAL_MINIMUM (0)
+            db(0x25, 0x07);               //     LOGICAL_MAXIMUM (7)
+            db(0x35, 0x00);               //     PHYSICAL_MINIMUM (0)
+            db(0x46, 0x3B, 0x01);         //     PHYSICAL_MAXIMUM (315)
+            db(0x65, 0x14);               //     UNIT (Eng Rot:Angular Pos)
+            db(0x75, 0x04);               //     REPORT_SIZE (4)
+            db(0x95, 0x01);               //     REPORT_COUNT (1)
+            db(0x81, 0x02);               //   INPUT (Data,Var,Abs)
+        }
+
+        if (_hatSwitchCount & 1)        // 4 Padding Bits needed
+        {
+            db(0x75, 0x01);               //   REPORT_SIZE (1)
+            db(0x95, 0x04);               //   REPORT_COUNT (4 padding bits)
+            db(0x81, 0x03);               //   INPUT (Const,Var,Abs)
+        }
 	} // Hat Switches
 
-	if (axisCount > 0)
-  {
-    db(0x09, 0x01);                 //   USAGE (Pointer)
-    db(0x16, 0x01, 0x80);           //     LOGICAL_MINIMUM (-32767)
-    db(0x26, 0xFF, 0x7F);           //     LOGICAL_MAXIMUM (+32767)
-    db(0x75, 0x10);                 //     REPORT_SIZE (16)
-    db(0x95, axisCount);            //     REPORT_COUNT (axisCount)
-    db(0xA1, 0x00);                 //     COLLECTION (Physical)
+	if (axisCount > 0) {
+        db(0x09, 0x01);                 //   USAGE (Pointer)
+        db(0x16, 0x01, 0x80);           //     LOGICAL_MINIMUM (-32767)
+        db(0x26, 0xFF, 0x7F);           //     LOGICAL_MAXIMUM (+32767)
+        db(0x75, 0x10);                 //     REPORT_SIZE (16)
+        db(0x95, axisCount);            //     REPORT_COUNT (axisCount)
+        db(0xA1, 0x00);                 //     COLLECTION (Physical)
 
-		if (includeXAxis)  db(0x09, 0x30); //     USAGE (X)
-		if (includeYAxis)  db(0x09, 0x31); //     USAGE (Y)
-		if (includeZAxis)  db(0x09, 0x32); //     USAGE (Z)
-		if (includeRxAxis) db(0x09, 0x33); //     USAGE (Rx)
-		if (includeRyAxis) db(0x09, 0x34); //     USAGE (Ry)
-		if (includeRzAxis) db(0x09, 0x35); //     USAGE (Rz)
-		if (includeSlider) db(0x09, 0x36); //     USAGE (Slider)
-		if (includeDial)   db(0x09, 0x37); //     USAGE (Dial)
+            if (includeXAxis)  db(0x09, 0x30); //     USAGE (X)
+            if (includeYAxis)  db(0x09, 0x31); //     USAGE (Y)
+            if (includeZAxis)  db(0x09, 0x32); //     USAGE (Z)
+            if (includeRxAxis) db(0x09, 0x33); //     USAGE (Rx)
+            if (includeRyAxis) db(0x09, 0x34); //     USAGE (Ry)
+            if (includeRzAxis) db(0x09, 0x35); //     USAGE (Rz)
+            if (includeSlider) db(0x09, 0x36); //     USAGE (Slider)
+            if (includeDial)   db(0x09, 0x37); //     USAGE (Dial)
 
-    db(0x81, 0x02);                 //   INPUT (Data,Var,Abs)
-    db(0xc0);                       //   END_COLLECTION (Physical)
+        db(0x81, 0x02);                 //   INPUT (Data,Var,Abs)
+        db(0xc0);                       //   END_COLLECTION (Physical)
 	} // X, Y, Z, Rx, Ry, Rz, Slider, Dial Axis
 
 	// Create a copy of the HID Report Descriptor template that is just the right size
@@ -201,6 +198,20 @@ Joystick_::Joystick_(
 	DynamicHIDSubDescriptor* node = new DynamicHIDSubDescriptor(customHidReportDescriptor, hidReportDescriptorSize,pidReportDescriptor, pidReportDescriptorSize, false);
 	
 	DynamicHID().AppendDescriptor(node);
+	
+    // Setup Joystick State
+	if (buttonCount > 0) {
+		_buttonValuesArraySize = _buttonCount / 8;
+		if ((_buttonCount % 8) > 0) {
+			_buttonValuesArraySize++;
+		}
+		_buttonValues = new uint8_t[_buttonValuesArraySize];
+	}
+	
+	// Calculate HID Report Size
+	_hidReportSize = _buttonValuesArraySize;
+	_hidReportSize += (_hatSwitchCount > 0);
+	_hidReportSize += (axisCount * 2);
 	
 	// Initalize Joystick State
 	_xAxis = 0;
