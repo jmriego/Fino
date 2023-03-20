@@ -1,12 +1,6 @@
 void setupJoystick() {
     Joystick.setXAxisRange(minX, maxX);
     Joystick.setYAxisRange(minY, maxY);
-    Joystick.setZAxisRange(minY, maxY);
-    Joystick.setRxAxisRange(minX, maxX);
-    Joystick.setRyAxisRange(minY, maxY);
-    Joystick.setRzAxisRange(minY, maxY);
-    Joystick.setSliderRange(minY, maxY);
-    Joystick.setDialRange(minY, maxY);
     Joystick.begin();
     Gains gains[FFB_AXIS_COUNT];
     gains[0].frictionGain = friction_gain;
@@ -17,16 +11,6 @@ void setupJoystick() {
 void updateJoystickPos() {
     Joystick.setXAxis(pos[0]);
     Joystick.setYAxis(pos[1]);
-    Joystick.setZAxis(pos[2]);
-    Joystick.setRxAxis(pos[3]);
-    Joystick.setRyAxis(pos[4]);
-    Joystick.setRzAxis(pos[5]);
-    Joystick.setSlider(pos[6]);
-    Joystick.setDial(pos[7]);
-    Joystick.setHatSwitch(0, hat[0]);
-    Joystick.setHatSwitch(1, hat[1]);
-    Joystick.setHatSwitch(2, hat[2]);
-    Joystick.setHatSwitch(3, hat[3]);
 }
 
 void updateEffects(bool recalculate){

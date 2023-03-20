@@ -30,8 +30,7 @@ bool is_connected = false;
 bool forces_requested = false;
 bool pos_updated = false;
 
-int16_t pos[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-int16_t hat[4] = {0, 0, 0, 0};
+int16_t pos[2] = {0, 0};
 int lastX;
 int lastY;
 int lastVelX;

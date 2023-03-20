@@ -38,30 +38,9 @@ void get_messages_from_serial()
         {
           int16_t x = read_i16();
           int16_t y = read_i16();
-          int16_t z = read_i16();
-          int16_t rx = read_i16();
-          int16_t ry = read_i16();
-          int16_t rz = read_i16();
-          int16_t slider = read_i16();
-          int16_t dial = read_i16();
-          int16_t hat1 = read_i16();
-          int16_t hat2 = read_i16();
-          int16_t hat3 = read_i16();
-          int16_t hat4 = read_i16();
-
-          pos_updated = true;
           pos[0] = x;
           pos[1] = y;
-          pos[2] = z;
-          pos[3] = rx;
-          pos[4] = ry;
-          pos[5] = rz;
-          pos[6] = slider;
-          pos[7] = dial;
-          hat[0] = hat1;
-          hat[1] = hat2;
-          hat[2] = hat3;
-          hat[3] = hat4;
+          pos_updated = true;
           break;
         }
         case FORCES:
