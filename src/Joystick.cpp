@@ -208,7 +208,7 @@ Joystick_::Joystick_(
 	
 	// Calculate HID Report Size
 	_hidReportSize = _buttonValuesArraySize;
-	_hidReportSize += (_hatSwitchCount > 0);
+	_hidReportSize += (_hatSwitchCount + 1) / 2;
 	_hidReportSize += (axisCount * 2);
 	
 	// Initalize Joystick State
@@ -751,19 +751,33 @@ void Joystick_::sendState()
 
 	// Set Hat Switch Values
 	if (_hatSwitchCount > 0) {
+		
 		// Calculate hat-switch values
-		uint8_t convertedHatSwitch;
-		for (int hatSwitchIndex = 0; hatSwitchIndex < _hatSwitchCount; hatSwitchIndex++)
+		uint8_t convertedHatSwitch[JOYSTICK_HATSWITCH_COUNT_MAXIMUM];
+		for (int hatSwitchIndex = 0; hatSwitchIndex < JOYSTICK_HATSWITCH_COUNT_MAXIMUM; hatSwitchIndex++)
 		{
-			if (_hatSwitchValues[hatSwitchIndex] < 0) 
-           convertedHatSwitch = 8;
-			else convertedHatSwitch = (_hatSwitchValues[hatSwitchIndex] % 360) / 45;
-      
-      // Pack hat-switch states into a single byte
-      if (hatSwitchIndex & 1) data[index++] |= (convertedHatSwitch << 4);
-                         else data[index]    = (B00001111 & convertedHatSwitch);
-    }
-    if (_hatSwitchCount & 1) index++;
+			if (_hatSwitchValues[hatSwitchIndex] < 0)
+			{
+				convertedHatSwitch[hatSwitchIndex] = 8;
+			}
+			else
+			{
+				convertedHatSwitch[hatSwitchIndex] = (_hatSwitchValues[hatSwitchIndex] % 360) / 45;
+			}			
+
+            // Pack hat-switch states into a single byte
+            // every other hat, pack it together with the previous one
+            if (hatSwitchIndex % 2 == 1)
+            {
+                data[index++] = (convertedHatSwitch[hatSwitchIndex] << 4) | (B00001111 & convertedHatSwitch[hatSwitchIndex - 1]);
+            }
+            // if we have an odd number of hats, the last one will be "packed" by itself
+            else if (hatSwitchIndex == JOYSTICK_HATSWITCH_COUNT_MAXIMUM - 1)
+            {
+                data[index] = (B00001111 & convertedHatSwitch[hatSwitchIndex]);
+            }
+
+		}
 	} // Hat Switches
 
 	// Set Axis Values
