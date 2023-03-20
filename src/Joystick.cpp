@@ -147,28 +147,26 @@ Joystick_::Joystick_(
         db(0x05, 0x01);                 //   USAGE_PAGE (Generic Desktop)
 	}
 
-	if (_hatSwitchCount > 0) {
+    // Hats and padding
+    for (int index = 0; index < _hatSwitchCount; index++)
+    {
+        db(0x09, 0x39);               //   USAGE (Hat Switch)
+        db(0x15, 0x00);               //     LOGICAL_MINIMUM (0)
+        db(0x25, 0x07);               //     LOGICAL_MAXIMUM (7)
+        db(0x35, 0x00);               //     PHYSICAL_MINIMUM (0)
+        db(0x46, 0x3B, 0x01);         //     PHYSICAL_MAXIMUM (315)
+        db(0x65, 0x14);               //     UNIT (Eng Rot:Angular Pos)
+        db(0x75, 0x04);               //     REPORT_SIZE (4)
+        db(0x95, 0x01);               //     REPORT_COUNT (1)
+        db(0x81, 0x02);               //   INPUT (Data,Var,Abs)
+    }
 
-        for (int index = 0; index < _hatSwitchCount; index++)
-        {
-            db(0x09, 0x39);               //   USAGE (Hat Switch)
-            db(0x15, 0x00);               //     LOGICAL_MINIMUM (0)
-            db(0x25, 0x07);               //     LOGICAL_MAXIMUM (7)
-            db(0x35, 0x00);               //     PHYSICAL_MINIMUM (0)
-            db(0x46, 0x3B, 0x01);         //     PHYSICAL_MAXIMUM (315)
-            db(0x65, 0x14);               //     UNIT (Eng Rot:Angular Pos)
-            db(0x75, 0x04);               //     REPORT_SIZE (4)
-            db(0x95, 0x01);               //     REPORT_COUNT (1)
-            db(0x81, 0x02);               //   INPUT (Data,Var,Abs)
-        }
-
-        if (_hatSwitchCount & 1)        // 4 Padding Bits needed
-        {
-            db(0x75, 0x01);               //   REPORT_SIZE (1)
-            db(0x95, 0x04);               //   REPORT_COUNT (4 padding bits)
-            db(0x81, 0x03);               //   INPUT (Const,Var,Abs)
-        }
-	} // Hat Switches
+    if (_hatSwitchCount % 2 == 1)        // 4 Padding Bits needed
+    {
+        db(0x75, 0x01);               //   REPORT_SIZE (1)
+        db(0x95, 0x04);               //   REPORT_COUNT (4 padding bits)
+        db(0x81, 0x03);               //   INPUT (Const,Var,Abs)
+    }
 
 	if (axisCount > 0) {
         db(0x09, 0x01);                 //   USAGE (Pointer)

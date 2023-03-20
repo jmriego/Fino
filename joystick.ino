@@ -1,6 +1,12 @@
 void setupJoystick() {
     Joystick.setXAxisRange(minX, maxX);
     Joystick.setYAxisRange(minY, maxY);
+    Joystick.setZAxisRange(minY, maxY);
+    Joystick.setRxAxisRange(minX, maxX);
+    Joystick.setRyAxisRange(minY, maxY);
+    Joystick.setRzAxisRange(minY, maxY);
+    Joystick.setSliderRange(minY, maxY);
+    Joystick.setDialRange(minY, maxY);
     Joystick.begin();
     Gains gains[FFB_AXIS_COUNT];
     gains[0].frictionGain = friction_gain;
