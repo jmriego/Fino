@@ -744,6 +744,7 @@ void Joystick_::sendState()
 	int index = 0;
 	
 	// Load Button State
+    // After this code, index should point to the next data position after the buttons
 	for (; index < _buttonValuesArraySize; index++)
 	{
 		data[index] = _buttonValues[index];		
@@ -766,15 +767,15 @@ void Joystick_::sendState()
 			}			
 
             // Pack hat-switch states into a single byte
-            // every other hat, pack it together with the previous one
-            if (hatSwitchIndex % 2 == 1)
+            // Two hats fit here per byte
+            if (hatSwitchIndex % 2 == 0)
             {
-                data[index++] = (convertedHatSwitch[hatSwitchIndex] << 4) | (B00001111 & convertedHatSwitch[hatSwitchIndex - 1]);
+                data[index]    = (B00001111 & convertedHatSwitch);
             }
-            // if we have an odd number of hats, the last one will be "packed" by itself
-            else if (hatSwitchIndex == JOYSTICK_HATSWITCH_COUNT_MAXIMUM - 1)
+            else
             {
-                data[index] = (B00001111 & convertedHatSwitch[hatSwitchIndex]);
+                // update the existing hat state position and advance
+                data[index++] |= (convertedHatSwitch << 4);
             }
 
 		}
