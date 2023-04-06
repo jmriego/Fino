@@ -12,8 +12,8 @@ import collections
 BLACK = pygame.Color('black')
 WHITE = pygame.Color('white')
 
-NUM_AXES = 8
-NUM_HATS = 3
+NUM_AXES = 2
+NUM_HATS = 2
 
 # This is a simple class that will help us print to the screen.
 # It has nothing to do with the joysticks, just outputting the

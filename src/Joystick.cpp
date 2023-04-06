@@ -754,16 +754,16 @@ void Joystick_::sendState()
 	if (_hatSwitchCount > 0) {
 		
 		// Calculate hat-switch values
-		uint8_t convertedHatSwitch[JOYSTICK_HATSWITCH_COUNT_MAXIMUM];
-		for (int hatSwitchIndex = 0; hatSwitchIndex < JOYSTICK_HATSWITCH_COUNT_MAXIMUM; hatSwitchIndex++)
+		uint8_t convertedHatSwitch;
+		for (int hatSwitchIndex = 0; hatSwitchIndex < _hatSwitchCount; hatSwitchIndex++)
 		{
 			if (_hatSwitchValues[hatSwitchIndex] < 0)
 			{
-				convertedHatSwitch[hatSwitchIndex] = 8;
+				convertedHatSwitch = 8;
 			}
 			else
 			{
-				convertedHatSwitch[hatSwitchIndex] = (_hatSwitchValues[hatSwitchIndex] % 360) / 45;
+				convertedHatSwitch = (_hatSwitchValues[hatSwitchIndex] % 360) / 45;
 			}			
 
             // Pack hat-switch states into a single byte

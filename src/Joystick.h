@@ -138,7 +138,7 @@ private:
 
   void db(uint8_t a);
   template<typename... Args>
-  void Joystick_::db(uint8_t a, Args... args);
+  void db(uint8_t a, Args... args);
 
 	//force feedback gain
 	Gains m_gains[FFB_AXIS_COUNT];
